@@ -1,0 +1,77 @@
+.home-page {
+  display: flex;
+  align-items: center;
+  background-image: linear-gradient(
+    135deg,
+    rgb(24, 42, 115) 0%,
+    rgb(33, 138, 174) 69%,
+    rgb(32, 167, 172) 89%
+  ) !important;
+  height: 100vh;
+
+  &_content {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    margin: auto auto;
+    align-items: center;
+    justify-content: center;
+
+    &_title {
+      color: white;
+      font-size: 60px;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    &_login-buttons {
+      display: flex;
+      width: 400px;
+      justify-content: center;
+
+      button {
+        cursor: pointer;
+        width: 200px;
+        flex-shrink: 0;
+        margin-right: 16px;
+        margin-top: 20px;
+        background: transparent;
+        box-shadow: 0 0 0 2px #fff inset;
+        font-size: 20px;
+        border-radius: 5px;
+        font-weight: 600;
+
+        padding: 15px;
+
+        color: white;
+        border: none;
+
+        &:hover {
+          background: white;
+          color: black;
+        }
+      }
+    }
+
+    &_start-button {
+      cursor: pointer;
+      width: 200px;
+      margin-top: 20px;
+      background: transparent;
+      box-shadow: 0 0 0 2px #fff inset;
+      font-size: 20px;
+      border-radius: 5px;
+      font-weight: 600;
+
+      padding: 15px;
+
+      color: white;
+      border: none;
+
+      &:hover {
+        background: white;
+        color: black;
+      }
+    }
+  }
+}
