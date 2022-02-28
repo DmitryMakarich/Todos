@@ -4,21 +4,14 @@ import { validationResult } from "express-validator";
 import userService from "../services/userService";
 
 class UserController {
-  async login(req: Request, res: Response) {
+  async login(
+    req: Request<null, null, { email: string; password: string }>,
+    res: Response
+  ) {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          errors: errors.array(),
-          message: "Некорректные данные при входе в систему",
-        });
-      }
-
-      const { fullName, email, password } = req.body;
+      const { email, password } = req.body;
 
       const { user, token } = await userService.login({
-        fullName,
         email,
         password,
       });
@@ -35,17 +28,15 @@ class UserController {
     }
   }
 
-  async register(req: Request, res: Response) {
+  async register(
+    req: Request<
+      null,
+      null,
+      { fullName: string; email: string; password: string }
+    >,
+    res: Response
+  ) {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          errors: errors.array(),
-          message: "Некорректные данные при регистрации",
-        });
-      }
-
       const { fullName, email, password } = req.body;
 
       const user = await userService.register({ fullName, email, password });

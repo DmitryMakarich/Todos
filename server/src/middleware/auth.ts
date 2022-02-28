@@ -1,4 +1,4 @@
-import config from "config";
+import "dotenv/config";
 import jwt from "jsonwebtoken";
 
 function auth(req, res, next) {
@@ -10,9 +10,10 @@ function auth(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, config.get("jwtSecret"));
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded.userId;
+    req.userId = decoded.userId;
+
     next();
   } catch (e) {
     res.status(400).json({ msg: "Token is not valid" });

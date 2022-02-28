@@ -1,4 +1,4 @@
-import config from "config";
+import "dotenv/config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -26,7 +26,7 @@ class UserService {
       return { user: null, token: null };
     }
 
-    const token = jwt.sign({ userId: user.id }, config.get("jwtSecret"), {
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
