@@ -38,13 +38,11 @@ class TodoService {
 
     session.endSession();
 
-    const todo = Todo.findOne({
+    return Todo.findOne({
       title: data.title,
       tag: data.tagId,
       user: userId,
     }).lean();
-
-    return todo;
   }
 
   async update(id: ObjectId, data: TodoData) {
