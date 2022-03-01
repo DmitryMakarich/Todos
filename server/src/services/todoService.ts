@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import { title } from "process";
 import Todo from "../models/Todo";
 import User from "../models/User";
 
@@ -16,9 +15,9 @@ class TodoService {
   }
 
   async create(data: TodoData, userId: ObjectId) {
-    const session = await Todo.startSession();
+    const session = await mongoose.startSession();
 
-    await session.withTransaction(async (session) => {
+    await session.withTransaction(async () => {
       const user = await User.findOne({ _id: userId }).session(session);
 
       const todo = new Todo({
@@ -27,11 +26,11 @@ class TodoService {
         user: userId,
       });
 
-      await todo.save({ session: session });
+      await todo.save({ session });
 
       user.todos.push(todo._id);
 
-      await user.save({ session: session });
+      await user.save({ session });
 
       return todo;
     });
