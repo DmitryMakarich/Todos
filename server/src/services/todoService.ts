@@ -1,43 +1,67 @@
+import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
+import { title } from "process";
 import Todo from "../models/Todo";
 import User from "../models/User";
 
+interface TodoData {
+  title: string;
+  isCompleted?: boolean;
+  tagId: ObjectId;
+}
 
 class TodoService {
-  async getTodos(userId: string) {
-    const todos = await Todo.find({ user: userId });
-
-    return todos;
+  async getTodos(userId: ObjectId) {
+    return Todo.find({ user: userId });
   }
 
-  async create(data: any, userId: string) {
-    const user = await User.findOne({ _id: userId });
+  async create(data: TodoData, userId: ObjectId) {
+    const session = await Todo.startSession();
 
-    const todo = new Todo({
+    await session.withTransaction(async (session) => {
+      const user = await User.findOne({ _id: userId }).session(session);
+
+      const todo = new Todo({
+        title: data.title,
+        tag: data.tagId,
+        user: userId,
+      });
+
+      await todo.save({ session: session });
+
+      user.todos.push(todo._id);
+
+      await user.save({ session: session });
+
+      return todo;
+    });
+
+    session.endSession();
+
+    const todo = Todo.findOne({
       title: data.title,
       tag: data.tagId,
       user: userId,
-    });
-
-    await todo.save();
-
-    user.todos.push(todo._id);
-
-    await user.save();
+    }).lean();
 
     return todo;
   }
 
-  async update(id: string, data: any) {
-    const updatedTodo = await Todo.findByIdAndUpdate(id, {
-      title: data.title,
-      isCompleted: data.isCompleted,
-      tag: data.tagId,
-    });
+  async update(id: ObjectId, data: TodoData) {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      {
+        title: data.title,
+        isCompleted: data.isCompleted,
+        tag: data.tagId,
+      },
+      { returnDocument: "after" }
+    ).lean();
 
     return updatedTodo;
   }
 
-  async delete(id: string) {
+  async delete(id: ObjectId) {
     const deleted = await Todo.findByIdAndDelete(id);
 
     return deleted;

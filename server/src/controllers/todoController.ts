@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import todoService from "../services/todoService";
 import { ParamsDictionary, Query } from "express-serve-static-core";
+import { ObjectId } from "mongodb";
+
+import todoService from "../services/todoService";
 
 interface IAuthorizedRequest<
   P = ParamsDictionary,
@@ -15,7 +17,7 @@ interface IAuthorizedRequest<
 class TodoController {
   async get(req: IAuthorizedRequest, res: Response) {
     try {
-      const todos = await todoService.getTodos(req.userId);
+      const todos = await todoService.getTodos(new ObjectId(req.userId));
 
       res.json({ todos });
     } catch (e) {
@@ -30,10 +32,13 @@ class TodoController {
     try {
       const { title, tagId } = req.body;
 
-      const todo = await todoService.create({ title, tagId }, req.userId);
+      const todo = await todoService.create(
+        { title, tagId: new ObjectId(tagId) },
+        new ObjectId(req.userId)
+      );
 
       if (todo) {
-        return res.json({ message: "todo was created" });
+        return res.json({ todo });
       }
 
       return res.status(500).json({ message: "something went wrong" });
@@ -43,7 +48,7 @@ class TodoController {
   }
 
   async update(
-    req: Request<
+    req: IAuthorizedRequest<
       { id: string },
       null,
       { title: string; isCompleted: boolean; tagId: string }
@@ -53,14 +58,14 @@ class TodoController {
     try {
       const { title, isCompleted, tagId } = req.body;
 
-      const todo = await todoService.update(req.params.id, {
+      const todo = await todoService.update(new ObjectId(req.params.id), {
         title,
         isCompleted,
-        tagId,
+        tagId: new ObjectId(tagId),
       });
 
       if (todo) {
-        return res.json({ message: "todo was updated" });
+        return res.json({ todo });
       }
 
       return res.status(500).json({ message: "something went wrong" });
@@ -69,12 +74,14 @@ class TodoController {
     }
   }
 
-  async delete(req: Request<{ id: string }>, res: Response) {
+  async delete(req: IAuthorizedRequest<{ id: string }>, res: Response) {
     try {
-      const todo = await todoService.delete(req.params.id);
+      const todo = await todoService.delete(new ObjectId(req.params.id));
 
       if (todo) {
-        return res.json({ message: "todo was deleted" });
+        return res.json({
+          message: `todo with id-${req.params.id} was deleted`,
+        });
       }
 
       return res.status(500).json({ message: "something went wrong" });
