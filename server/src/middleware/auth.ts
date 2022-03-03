@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 function auth(req, res, next) {
   const authorization = req.header("Authorization");
-  const token = authorization.split(" ")[1];
+  const token = authorization ? authorization.split(" ")[1] : null;
 
   if (!token) {
     return res.status(401).json({ msg: "No token, authorization denied" });

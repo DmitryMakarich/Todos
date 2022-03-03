@@ -1,0 +1,28 @@
+.authorize-form {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  width: 320px;
+  padding: 1.5rem;
+  border-radius: 10px;
+
+  h2 {
+    margin-top: 0px;
+    color: #00b5ad;
+    text-align: center;
+  }
+
+  &_button {
+    background-color: #21ba45;
+    color: white;
+    outline: 0;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+
+    &:hover {
+      background-color: #16ab39;
+      cursor: pointer;
+    }
+  }
+}

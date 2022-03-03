@@ -20,7 +20,11 @@ class UserController {
         return res.status(400).json({ message: "Неверный логин или пароль" });
       }
 
-      res.json({ token, userId: user.id });
+      res.json({
+        accessToken: token,
+        userId: user.id,
+        userName: user.fullName,
+      });
     } catch (e) {
       res
         .status(500)
