@@ -21,11 +21,10 @@ class BaseService {
   requests = {
     get: <T>(url: string, params = {}) =>
       API.get<T>(url, { params }).then(this.responseBody),
-    post: <T>(url: string, body: {}) =>
-      API.post<T>(url, body),
+    post: <T>(url: string, body: {}) => API.post<T>(url, body),
     put: <T>(url: string, body: {}) =>
       API.put<T>(url, body).then(this.responseBody),
-    del: <T>(url: string) => API.delete<T>(url).then(this.responseBody),
+    del: <T>(url: string) => API.delete<T>(url),
   };
 }
 

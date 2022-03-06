@@ -1,4 +1,4 @@
-.authorize-form {
+.form {
   display: flex;
   flex-direction: column;
   background: white;
@@ -12,7 +12,7 @@
     text-align: center;
   }
 
-  &_button {
+  &_btn {
     background-color: #21ba45;
     color: white;
     outline: 0;

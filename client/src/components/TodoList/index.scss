@@ -1,5 +1,5 @@
 .todo-list {
-  max-height: 500px;
+  max-height: 450px;
   overflow: auto;
   width: 70%;
   border-radius: 20px;
@@ -31,7 +31,6 @@
     height: 300px;
     overflow-x: auto;
     background: white;
-    // background: #1aa2ad;
 
     td {
       padding: 15px;
@@ -51,12 +50,15 @@
       svg {
         width: 23px;
         height: 23px;
+
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
   }
 }
 
-/* Стили для скролла */
 ::-webkit-scrollbar {
   width: 6px;
 }

@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRouter from "./routes/auth.routes";
 import todoRouter from "./routes/todo.routes";
+import tagRouter from "./routes/tag.routes";
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(
   })
 );
 app.use("/api/auth", authRouter);
-app.use("/api", todoRouter);
+app.use("/api", todoRouter, tagRouter);
 
 async function startApp() {
   try {
@@ -32,3 +33,4 @@ async function startApp() {
 }
 
 startApp();
+

@@ -1,22 +1,37 @@
-import React from "react";
+import { observer } from "mobx-react-lite";
+import React, { useState } from "react";
 import { BsTrashFill } from "react-icons/bs";
 import { BsPencilSquare } from "react-icons/bs";
+import TagModel from "../../model/Tag";
 
 import TodoModel from "../../model/Todo";
+import { titles } from "../../utils/TableTitles";
+import DeleteForm from "../Modal/Forms/Delete";
+import UpdateForm from "../Modal/Forms/Update";
 
 import "./index.scss";
 
 interface Props {
   todos: Array<TodoModel>;
+  tags: Array<TagModel>;
+  deleteHandler: (id: string) => Promise<string>;
+  updateHadler: (todo: TodoModel) => Promise<void>;
 }
 
-const titles = [
-  { label: "#" },
-  { label: "Todo Title" },
-  { label: "Actions", colSpan: 2 },
-];
+function TodoList({ todos, tags, deleteHandler, updateHadler }: Props) {
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [selectedTodo, setSelectedTodo] = useState<TodoModel | null>(null);
 
-export default function TodoList({ todos }: Props) {
+  const deleteModalHandler = () => {
+    setIsOpenDeleteModal(!isOpenDeleteModal);
+  };
+
+  const updateModalHandler = () => {
+    setIsOpenUpdateModal(!isOpenUpdateModal);
+  };
+
   return (
     <div className="todo-list">
       <table>
@@ -38,21 +53,55 @@ export default function TodoList({ todos }: Props) {
               <td>
                 <input
                   type="checkbox"
-                  checked={todo.isCompleted}
-                  onChange={(e) => (e.target.checked = !e.target.checked)}
+                  defaultChecked={todo.isCompleted}
+                  onChange={(e) => {
+                    updateHadler({
+                      ...todo,
+                      isCompleted: e.currentTarget.checked,
+                    });
+                  }}
                 />
               </td>
               <td>{todo.title}</td>
+              <td>{tags.find((tag) => tag._id === todo.tag)?.title}</td>
               <td>
-                <BsPencilSquare />
+                <BsPencilSquare
+                  onClick={() => {
+                    setSelectedTodo(todo);
+                    updateModalHandler();
+                  }}
+                />
               </td>
               <td>
-                <BsTrashFill />
+                <BsTrashFill
+                  onClick={() => {
+                    deleteHandler(todo._id).then((message) => {
+                      setDeleteMessage(message);
+                      deleteModalHandler();
+                    });
+                  }}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {isOpenDeleteModal && (
+        <DeleteForm
+          onCloseHandler={deleteModalHandler}
+          message={deleteMessage}
+        />
+      )}
+      {isOpenUpdateModal && selectedTodo && (
+        <UpdateForm
+          onCloseHandler={updateModalHandler}
+          options={tags}
+          updateHandler={updateHadler}
+          todo={selectedTodo}
+        />
+      )}
     </div>
   );
 }
+
+export default observer(TodoList);

@@ -1,9 +1,9 @@
-import cx from "classnames";
+import { useRef, useState } from "react";
 import { FieldHookConfig, useField } from "formik";
-import { useState } from "react";
 
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 
+import cx from "classnames";
 import "./index.scss";
 
 interface Props {
@@ -18,6 +18,7 @@ export default function TextInput({
   password,
   className,
   label,
+  value,
   ...props
 }: FieldHookConfig<string> & Props) {
   const [field, meta] = useField(props);

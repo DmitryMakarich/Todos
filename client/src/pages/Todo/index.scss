@@ -24,7 +24,7 @@
       color: white;
     }
 
-    &_button {
+    &_btn {
       outline: none;
       background: transparent;
       border: 1px solid white;
@@ -51,6 +51,25 @@
     h1 {
       font-size: 40px;
       color: white;
+      margin-bottom: 16px;
+    }
+
+    &_create-btn {
+      margin-bottom: 16px;
+      width: 160px;
+      outline: none;
+      background: transparent;
+      border: 1px solid white;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+      padding: 12px;
+
+      &:hover {
+        background: white;
+        color: black;
+        cursor: pointer;
+      }
     }
 
     &_list {

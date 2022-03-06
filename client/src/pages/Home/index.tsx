@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useStore } from "../../store";
-import LoginForm from "../../components/Modal/AuthorizationForms/LoginForm";
-import RegisterForm from "../../components/Modal/AuthorizationForms/RegisterForm";
+import LoginForm from "../../components/Modal/Forms/Login";
+import RegisterForm from "../../components/Modal/Forms/Register";
 import "./index.scss";
 import { observer } from "mobx-react-lite";
 
 function HomePage() {
-  const { userStore, todoStore } = useStore();
+  const { userStore } = useStore();
 
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);

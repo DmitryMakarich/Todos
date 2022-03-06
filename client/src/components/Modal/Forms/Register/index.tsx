@@ -4,50 +4,58 @@ import { Form, Formik } from "formik";
 import "../index.scss";
 import TextInput from "../../../TextInput";
 import * as Yup from "yup";
-import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../store";
+import { observer } from "mobx-react-lite";
 
 interface Props {
   onCloseHandler: Function;
 }
 
 const LoginSchema = Yup.object().shape({
+  userName: Yup.string().required("Required"),
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string()
     .required("Required")
     .min(6, "password should contain at least 6 symbols"),
 });
 
-function LoginForm({ onCloseHandler }: Props) {
+function RegisterForm({ onCloseHandler }: Props) {
   const { userStore } = useStore();
 
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ userName: "", email: "", password: "" }}
         validationSchema={LoginSchema}
         onSubmit={(
-          values: { email: string; password: string },
+          values: {
+            email: string;
+            password: string;
+            userName: string;
+          },
           { setErrors }
         ) => {
           userStore
-            .login(values.email, values.password)
+            .register(values.email, values.password, values.userName)
             .then(() => onCloseHandler())
-            .catch(() => setErrors({ password: "Неверный логин или пароль" }));
+            .catch(() =>
+              setErrors({ password: "Такой пользователь уже существует" })
+            );
         }}
       >
         {({ handleSubmit }) => (
           <Form
-            className="authorize-form"
+            className="form"
             onSubmit={handleSubmit}
             autoComplete="off"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Login to Todo App</h2>
-            <TextInput name="email" type="email" placeholder="Email" />
+            <h2>Sign up to Todo App</h2>
+            <TextInput name="userName" placeholder="Name" />
+            <TextInput name="email" placeholder="Email" />
             <TextInput name="password" password placeholder="Password" />
-            <button className="authorize-form_button" type="submit">
-              Login
+            <button className="form_btn" type="submit">
+              Register
             </button>
           </Form>
         )}
@@ -56,4 +64,4 @@ function LoginForm({ onCloseHandler }: Props) {
   );
 }
 
-export default observer(LoginForm);
+export default observer(RegisterForm);

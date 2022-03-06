@@ -1,0 +1,14 @@
+.select-field {
+  padding: 8px 12px;
+  margin-bottom: 12px;
+
+  &:focus {
+    outline: none;
+    border-color: #85b7d9;
+  }
+
+  &_error {
+    color: red;
+    font-size: 14px;
+  }
+}
