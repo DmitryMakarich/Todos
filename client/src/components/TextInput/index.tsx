@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FieldHookConfig, useField } from "formik";
 
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";

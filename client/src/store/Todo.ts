@@ -42,14 +42,14 @@ export default class TodoStore {
   }
 
   async deleteTodo(id: string) {
-    this.isLoading = true;
+    // this.isLoading = true;
     const response = await todoService.deleteTodo(id);
 
     runInAction(() => {
       if (response.status === 200) {
         this.todos = this.todos.filter((todo) => todo._id !== id);
       }
-      this.isLoading = false;
+      // this.isLoading = false;
     });
 
     return response.data.message;

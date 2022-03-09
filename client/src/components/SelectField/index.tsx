@@ -19,8 +19,6 @@ export default function SelectField({
 }: FieldHookConfig<string> & Props) {
   const [field, meta] = useField(props);
 
-  console.log("selected", field);
-
   return (
     <>
       <select

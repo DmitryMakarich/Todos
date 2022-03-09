@@ -1,7 +1,10 @@
-import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+import { observer } from "mobx-react-lite";
+
 import { BsTrashFill } from "react-icons/bs";
 import { BsPencilSquare } from "react-icons/bs";
+import { BsFillExclamationCircleFill } from "react-icons/bs";
+
 import TagModel from "../../model/Tag";
 
 import TodoModel from "../../model/Todo";
@@ -10,6 +13,7 @@ import DeleteForm from "../Modal/Forms/Delete";
 import UpdateForm from "../Modal/Forms/Update";
 
 import "./index.scss";
+import { StyledTooltip } from "../Tooltip";
 
 interface Props {
   todos: Array<TodoModel>;
@@ -62,7 +66,16 @@ function TodoList({ todos, tags, deleteHandler, updateHadler }: Props) {
                   }}
                 />
               </td>
-              <td>{todo.title}</td>
+              <td>
+                <span>{todo.title}</span>
+                {todo.title.length > 20 && (
+                  <StyledTooltip title={todo.title} arrow placement="top">
+                    <div className="tooltip_trigger">
+                      <BsFillExclamationCircleFill />
+                    </div>
+                  </StyledTooltip>
+                )}
+              </td>
               <td>{tags.find((tag) => tag._id === todo.tag)?.title}</td>
               <td>
                 <BsPencilSquare

@@ -30,7 +30,7 @@ export default function UpdateForm({
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik
-        initialValues={{ title: "", tag: "" }}
+        initialValues={{ title: todo.title, tag: todo.tag }}
         validationSchema={CreationSchema}
         onSubmit={(values: { title: string; tag: string }, { setErrors }) => {
           updateHandler({ ...todo, title: values.title, tag: values.tag })

@@ -1,5 +1,4 @@
 import { Redirect, Route, RouteProps } from "react-router-dom";
-import { useStore } from "../../store";
 
 export default function PrivateRoute({
   component: Component,

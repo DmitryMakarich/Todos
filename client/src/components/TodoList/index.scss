@@ -39,7 +39,23 @@
       text-align: center;
 
       &:nth-child(2) {
+        position: relative;
+
         text-align: start;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .tooltip_trigger {
+          height: 20px;
+          position: absolute;
+          top: 12%;
+          right: 0;
+
+          svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
 
       input[type="checkbox"] {
