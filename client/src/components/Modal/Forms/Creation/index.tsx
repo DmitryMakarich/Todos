@@ -11,6 +11,7 @@ import TagModel from "../../../../model/Tag";
 interface Props {
   onCloseHandler: Function;
   options: Array<TagModel>;
+  isLoading: boolean;
   createHandler: (title: string, tagId: string) => Promise<void>;
 }
 
@@ -23,6 +24,7 @@ export default function CreationForm({
   onCloseHandler,
   options,
   createHandler,
+  isLoading,
 }: Props) {
   return (
     <Modal onCloseHandler={onCloseHandler}>
@@ -52,7 +54,7 @@ export default function CreationForm({
                 value: tag._id,
               }))}
             />
-            <button className="form_btn" type="submit">
+            <button disabled={isLoading} className="form_btn" type="submit">
               Submit
             </button>
           </Form>

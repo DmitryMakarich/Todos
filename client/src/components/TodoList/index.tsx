@@ -15,7 +15,7 @@ import UpdateForm from "../Modal/Forms/Update";
 import "./index.scss";
 import { StyledTooltip } from "../Tooltip";
 import EmptyTodos from "../EmptyTodos";
-import { Alert, Snackbar } from "@mui/material";
+import CustomSnackBar from "../SnackBar";
 
 interface Props {
   isEmpty: boolean;
@@ -71,7 +71,7 @@ function TodoList({
             <table>
               <thead className="todo-list_head">
                 <tr>
-                  {titles.map((title, index) => (
+                  {titles.map((title) => (
                     <th key={title.label} colSpan={title.colSpan}>
                       {title.label}
                     </th>
@@ -151,19 +151,11 @@ function TodoList({
       ) : (
         <EmptyTodos />
       )}
-      <Snackbar
-        open={isOpenSnackBar}
-        autoHideDuration={3000}
-        onClose={snackBarHandler}
-      >
-        <Alert
-          onClose={snackBarHandler}
-          severity={isSuccessfullyDeleted ? "success" : "info"}
-          sx={{ width: "100%" }}
-        >
-          {isSuccessfullyDeleted ? "Todo was deleted" : "Action was denied"}
-        </Alert>
-      </Snackbar>
+      <CustomSnackBar
+        isOpenSnackBar={isOpenSnackBar}
+        isSuccessfullyDeleted={isSuccessfullyDeleted}
+        snackBarHandler={snackBarHandler}
+      />
     </>
   );
 }

@@ -9,12 +9,13 @@ import TodoList from "../../components/TodoList";
 import Loader from "../../components/Loader";
 import { useHistory } from "react-router-dom";
 import CreationForm from "../../components/Modal/Forms/Creation";
+import { Pagination } from "@mui/material";
 
 function TodoPage() {
   const history = useHistory();
   const { userStore, todoStore, tagStore } = useStore();
 
-  const { createTodo, deleteTodo, updateTodo } = todoStore;
+  const { createTodo, deleteTodo, updateTodo, currentPage } = todoStore;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
@@ -29,13 +30,19 @@ function TodoPage() {
 
   useEffect(() => {
     todoStore.init();
-    tagStore.init();
 
     return () => {
       todoStore.dispose();
+    };
+  }, [todoStore, currentPage]);
+
+  useEffect(() => {
+    tagStore.init();
+
+    return () => {
       tagStore.dispose();
     };
-  }, [todoStore, tagStore]);
+  }, [tagStore]);
 
   return (
     <div className="todo-page">
@@ -72,14 +79,26 @@ function TodoPage() {
         {todoStore.isLoading ? (
           <Loader />
         ) : (
-          <TodoList
-            isEmpty={todoStore.isEmptyTodos()}
-            todos={todoStore.getTodos(isCompleted)}
-            tags={tagStore.tags}
-            deleteHandler={deleteTodo.bind(todoStore)}
-            updateHadler={updateTodo.bind(todoStore)}
-            filterHandler={filterhandler}
-          />
+          <>
+            <TodoList
+              isEmpty={todoStore.isEmptyTodos()}
+              todos={todoStore.getTodos(isCompleted)}
+              tags={tagStore.tags}
+              deleteHandler={deleteTodo.bind(todoStore)}
+              updateHadler={updateTodo.bind(todoStore)}
+              filterHandler={filterhandler}
+            />
+            <Pagination
+              page={todoStore.currentPage}
+              onChange={(_, value) => todoStore.setCurrentPage(value)}
+              className="todo-page_body_links"
+              count={todoStore.totalPages}
+              color="primary"
+              hidePrevButton
+              hideNextButton
+              style={{ color: "white" }}
+            />
+          </>
         )}
       </section>
       {isOpenModal && (
@@ -87,6 +106,7 @@ function TodoPage() {
           onCloseHandler={openModalHandler}
           createHandler={createTodo.bind(todoStore)}
           options={tagStore.tags}
+          isLoading={todoStore.isLoading}
         />
       )}
     </div>

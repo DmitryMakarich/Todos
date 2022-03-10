@@ -6,6 +6,9 @@ import TodoModel from "../model/Todo";
 export default class TodoStore {
   todos: Array<TodoModel> = [];
   isLoading: boolean = true;
+  totalPages = 0;
+  limit = 5;
+  currentPage = 1;
 
   constructor() {
     makeAutoObservable(this);
@@ -21,27 +24,37 @@ export default class TodoStore {
     });
   }
 
+  setCurrentPage(value: number) {
+    this.currentPage = value;
+  }
+
   isEmptyTodos() {
     return this.todos.length === 0;
   }
 
   async init() {
-    todoService.getTodos().then((data) => {
+    todoService.getTodos(this.currentPage, this.limit).then((data) => {
       runInAction(() => {
         this.todos = data.todos;
         this.isLoading = false;
+        this.totalPages = Math.ceil(data.count / this.limit);
       });
     });
   }
 
   async createTodo(title: string, tagId: string) {
+    this.isLoading = true;
     const result = (await todoService.createTodo(title, tagId)).data;
 
-    if (result.todo) {
-      runInAction(() => {
+    runInAction(() => {
+      if (result.todo && this.todos.length < this.limit) {
         this.todos.push(result.todo);
-      });
-    }
+      }
+
+      this.totalPages = Math.ceil(result.count / this.limit);
+
+      this.isLoading = false;
+    });
   }
 
   async updateTodo(todo: TodoModel) {
@@ -56,14 +69,26 @@ export default class TodoStore {
   }
 
   async deleteTodo(id: string) {
-    // this.isLoading = true;
     const response = await todoService.deleteTodo(id);
 
     runInAction(() => {
       if (response.status === 200) {
         this.todos = this.todos.filter((todo) => todo._id !== id);
       }
-      // this.isLoading = false;
+
+      this.totalPages = Math.ceil(response.data.count / this.limit);
+
+      if (this.totalPages === 0) {
+        this.setCurrentPage(1);
+        return;
+      }
+
+      if (this.totalPages < this.currentPage) {
+        this.setCurrentPage(this.currentPage - 1);
+        return;
+      }
+
+      this.init();
     });
 
     return response.data.message;
@@ -72,5 +97,6 @@ export default class TodoStore {
   dispose() {
     this.todos = [];
     this.isLoading = true;
+    this.totalPages = 0;
   }
 }

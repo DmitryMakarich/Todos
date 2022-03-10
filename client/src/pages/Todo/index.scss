@@ -55,7 +55,7 @@
     }
 
     &_create-btn {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       width: 160px;
       outline: none;
       background: transparent;
@@ -72,11 +72,12 @@
       }
     }
 
-    &_list {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      width: 60%;
+    &_links {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      button {
+        color: white;
+      }
     }
   }
 }

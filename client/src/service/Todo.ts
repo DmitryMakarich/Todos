@@ -3,12 +3,18 @@ import BaseService from "./Base";
 import TodoModel from "../model/Todo";
 
 class Service extends BaseService {
-  public getTodos() {
-    return this.requests.get<{ todos: Array<TodoModel> }>("/todo");
+  public getTodos(page: number, limit: number) {
+    return this.requests.get<{ todos: Array<TodoModel>; count: number }>(
+      "/todo",
+      { page, limit }
+    );
   }
 
   public createTodo(title: string, tagId: string) {
-    return this.requests.post<{ todo: TodoModel }>("/todo", { title, tagId });
+    return this.requests.post<{ todo: TodoModel; count: number }>("/todo", {
+      title,
+      tagId,
+    });
   }
 
   public updateTodo(todo: TodoModel) {
@@ -20,7 +26,7 @@ class Service extends BaseService {
   }
 
   public deleteTodo(id: string) {
-    return this.requests.del<{ message: string }>(`/todo/${id}`);
+    return this.requests.del<{ message: string; count: number }>(`/todo/${id}`);
   }
 }
 

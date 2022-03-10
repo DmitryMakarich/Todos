@@ -10,17 +10,25 @@ interface TodoData {
 }
 
 class TodoService {
-  async getTodos(userId: ObjectId) {
-    return Todo.find({ user: userId, isArchive: false });
+  async getTodos(userId: ObjectId, limit: number, page: number) {
+    const todos = await Todo.find({ user: userId, isArchive: false })
+      .limit(limit)
+      .skip((page - 1) * limit);
+
+    const count = await Todo.countDocuments({ user: userId, isArchive: false });
+
+    return { todos, count };
   }
 
   async create(data: TodoData, userId: ObjectId) {
     const session = await mongoose.startSession();
 
+    let todo;
+
     await session.withTransaction(async () => {
       const user = await User.findOne({ _id: userId }).session(session);
 
-      const todo = new Todo({
+      todo = new Todo({
         title: data.title,
         tag: data.tagId,
         user: userId,
@@ -37,11 +45,9 @@ class TodoService {
 
     session.endSession();
 
-    return Todo.findOne({
-      title: data.title,
-      tag: data.tagId,
-      user: userId,
-    }).lean();
+    const count = await Todo.countDocuments({ user: userId, isArchive: false });
+
+    return { todo, count };
   }
 
   async update(id: ObjectId, data: TodoData) {
@@ -56,12 +62,16 @@ class TodoService {
     ).lean();
   }
 
-  async delete(id: ObjectId) {
-    return Todo.findByIdAndUpdate(id, {
+  async delete(id: ObjectId, userId: ObjectId) {
+    const todo = await Todo.findByIdAndUpdate(id, {
       $set: {
         isArchive: true,
       },
     });
+
+    const count = await Todo.countDocuments({ user: userId, isArchive: false });
+
+    return { todo, count };
   }
 }
 

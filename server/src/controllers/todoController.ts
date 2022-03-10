@@ -15,11 +15,20 @@ interface IAuthorizedRequest<
 }
 
 class TodoController {
-  async get(req: IAuthorizedRequest, res: Response) {
+  async get(
+    req: IAuthorizedRequest<null, null, null, { page: number; limit: number }>,
+    res: Response
+  ) {
     try {
-      const todos = await todoService.getTodos(new ObjectId(req.userId));
+      const { limit, page } = req.query;
 
-      res.json({ todos });
+      const { todos, count } = await todoService.getTodos(
+        new ObjectId(req.userId),
+        limit,
+        page
+      );
+
+      res.json({ todos, count });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -32,13 +41,13 @@ class TodoController {
     try {
       const { title, tagId } = req.body;
 
-      const todo = await todoService.create(
+      const { todo, count } = await todoService.create(
         { title, tagId: new ObjectId(tagId) },
         new ObjectId(req.userId)
       );
 
       if (todo) {
-        return res.json({ todo });
+        return res.json({ todo, count });
       }
 
       return res.status(500).json({ message: "something went wrong" });
@@ -76,11 +85,15 @@ class TodoController {
 
   async delete(req: IAuthorizedRequest<{ id: string }>, res: Response) {
     try {
-      const todo = await todoService.delete(new ObjectId(req.params.id));
+      const { todo, count } = await todoService.delete(
+        new ObjectId(req.params.id),
+        new ObjectId(req.userId)
+      );
 
       if (todo) {
         return res.json({
           message: `todo with id-${req.params.id} was deleted`,
+          count,
         });
       }
 
