@@ -11,29 +11,43 @@ export default class TodoStore {
     makeAutoObservable(this);
   }
 
+  getTodos(isCompleted: boolean | null) {
+    return this.todos.filter((todo) => {
+      if (isCompleted === null) {
+        return todo;
+      }
+
+      return todo.isCompleted === isCompleted;
+    });
+  }
+
+  isEmptyTodos() {
+    return this.todos.length === 0;
+  }
+
   async init() {
     todoService.getTodos().then((data) => {
       runInAction(() => {
-        this.todos = data;
+        this.todos = data.todos;
         this.isLoading = false;
       });
     });
   }
 
   async createTodo(title: string, tagId: string) {
-    const todo = await todoService.createTodo(title, tagId);
+    const result = (await todoService.createTodo(title, tagId)).data;
 
-    if (todo) {
+    if (result.todo) {
       runInAction(() => {
-        this.todos.push(todo);
+        this.todos.push(result.todo);
       });
     }
   }
 
   async updateTodo(todo: TodoModel) {
-    const updatedTodo = await todoService.updateTodo(todo);
+    const updatedTodo = (await todoService.updateTodo(todo)).todo;
     const todoIndex = this.todos.findIndex((elem) => elem._id === todo._id);
-    
+
     runInAction(() => {
       if (updatedTodo) {
         this.todos.splice(todoIndex, 1, updatedTodo);

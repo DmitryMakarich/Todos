@@ -17,9 +17,14 @@ function TodoPage() {
   const { createTodo, deleteTodo, updateTodo } = todoStore;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
 
   const openModalHandler = () => {
     setIsOpenModal(!isOpenModal);
+  };
+
+  const filterhandler = (filter: boolean | null) => {
+    setIsCompleted(filter);
   };
 
   useEffect(() => {
@@ -47,10 +52,20 @@ function TodoPage() {
         </button>
       </header>
       <section className="todo-page_body">
-        <h1>Yout todo list</h1>
+        <h1>Your todo list</h1>
         <button
           className="todo-page_body_create-btn"
           onClick={openModalHandler}
+          style={
+            !todoStore.todos.length
+              ? {
+                  border: "5px solid white",
+                  animationDuration: "3s",
+                  animationName: "highlights",
+                  animationIterationCount: "infinite",
+                }
+              : {}
+          }
         >
           Create todo
         </button>
@@ -58,10 +73,12 @@ function TodoPage() {
           <Loader />
         ) : (
           <TodoList
-            todos={todoStore.todos}
+            isEmpty={todoStore.isEmptyTodos()}
+            todos={todoStore.getTodos(isCompleted)}
             tags={tagStore.tags}
             deleteHandler={deleteTodo.bind(todoStore)}
             updateHadler={updateTodo.bind(todoStore)}
+            filterHandler={filterhandler}
           />
         )}
       </section>

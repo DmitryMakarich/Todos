@@ -4,9 +4,7 @@ import TagModel from "../model/Tag";
 
 class Service extends BaseService {
   public getTags() {
-    return this.requests
-      .get<{ tags: Array<TagModel> }>("/tag")
-      .then((data) => data.tags);
+    return this.requests.get<{ tags: Array<TagModel> }>("/tag");
   }
 }
 

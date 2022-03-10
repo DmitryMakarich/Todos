@@ -14,16 +14,22 @@ export default class UserStore {
   async init() {}
 
   async login(email: string, password: string) {
-    const result = await userService.login(email, password);
+    userService.login(email, password).then((result) => {
+      window.localStorage.setItem("accessToken", result.data.accessToken);
 
-    runInAction(() => {
-      this.user = result;
-      this.isLogging = true;
+      runInAction(() => {
+        this.user = {
+          userId: result.data.userId,
+          userName: result.data.userName,
+        };
+        this.isLogging = true;
+      });
     });
   }
 
   async register(email: string, password: string, fullName: string) {
-    const status = await userService.register(email, password, fullName);
+    const status = (await userService.register(email, password, fullName))
+      .status;
 
     if (status === 201) {
       this.login(email, password);
@@ -31,7 +37,7 @@ export default class UserStore {
   }
 
   logout() {
-    userService.logout();
+    window.localStorage.removeItem("accessToken");
     this.user = null;
     this.isLogging = false;
   }

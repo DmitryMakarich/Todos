@@ -13,7 +13,7 @@ export default class TagStore {
   async init() {
     tagService.getTags().then((data) => {
       runInAction(() => {
-        this.tags = data;
+        this.tags = data.tags;
       });
     });
   }

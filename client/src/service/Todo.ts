@@ -4,25 +4,19 @@ import TodoModel from "../model/Todo";
 
 class Service extends BaseService {
   public getTodos() {
-    return this.requests
-      .get<{ todos: Array<TodoModel> }>("/todo")
-      .then((data) => data.todos);
+    return this.requests.get<{ todos: Array<TodoModel> }>("/todo");
   }
 
   public createTodo(title: string, tagId: string) {
-    return this.requests
-      .post<{ todo: TodoModel }>("/todo", { title, tagId })
-      .then((res) => res.data.todo);
+    return this.requests.post<{ todo: TodoModel }>("/todo", { title, tagId });
   }
 
   public updateTodo(todo: TodoModel) {
-    return this.requests
-      .put<{ todo: TodoModel }>(`/todo/${todo._id}`, {
-        title: todo.title,
-        isCompleted: todo.isCompleted,
-        tagId: todo.tag,
-      })
-      .then((res) => res.todo);
+    return this.requests.put<{ todo: TodoModel }>(`/todo/${todo._id}`, {
+      title: todo.title,
+      isCompleted: todo.isCompleted,
+      tagId: todo.tag,
+    });
   }
 
   public deleteTodo(id: string) {

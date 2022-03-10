@@ -12,6 +12,18 @@
     text-align: center;
   }
 
+  &_btn-block {
+    display: flex;
+    justify-content: center;
+
+    .form_btn {
+      width: 150px;
+      &:first-of-type {
+        margin-right: 16px;
+      }
+    }
+  }
+
   &_btn {
     background-color: #21ba45;
     color: white;

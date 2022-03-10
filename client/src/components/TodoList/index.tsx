@@ -14,19 +14,33 @@ import UpdateForm from "../Modal/Forms/Update";
 
 import "./index.scss";
 import { StyledTooltip } from "../Tooltip";
+import EmptyTodos from "../EmptyTodos";
+import { Alert, Snackbar } from "@mui/material";
 
 interface Props {
+  isEmpty: boolean;
   todos: Array<TodoModel>;
   tags: Array<TagModel>;
   deleteHandler: (id: string) => Promise<string>;
   updateHadler: (todo: TodoModel) => Promise<void>;
+  filterHandler: Function;
 }
 
-function TodoList({ todos, tags, deleteHandler, updateHadler }: Props) {
+function TodoList({
+  isEmpty,
+  todos,
+  tags,
+  deleteHandler,
+  updateHadler,
+  filterHandler,
+}: Props) {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
-  const [deleteMessage, setDeleteMessage] = useState("");
   const [selectedTodo, setSelectedTodo] = useState<TodoModel | null>(null);
+  const [isOpenSnackBar, setIsOpenSnackBar] = useState(false);
+  const [isSuccessfullyDeleted, setIsSuccessfullyDeleted] = useState<
+    boolean | null
+  >(null);
 
   const deleteModalHandler = () => {
     setIsOpenDeleteModal(!isOpenDeleteModal);
@@ -36,84 +50,121 @@ function TodoList({ todos, tags, deleteHandler, updateHadler }: Props) {
     setIsOpenUpdateModal(!isOpenUpdateModal);
   };
 
+  const snackBarHandler = () => {
+    setIsOpenSnackBar(!isOpenSnackBar);
+  };
+
+  const deleteActionHander = (result: boolean) => {
+    setIsSuccessfullyDeleted(result);
+  };
+
   return (
-    <div className="todo-list">
-      <table>
-        <thead className="todo-list_head">
-          <tr>
-            {titles.map((title) => (
-              <th key={title.label} colSpan={title.colSpan}>
-                {title.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="todo-list_body">
-          {todos.map((todo) => (
-            <tr
-              key={todo._id}
-              style={{ background: todo.isCompleted ? "#bdffb8" : "white" }}
-            >
-              <td>
-                <input
-                  type="checkbox"
-                  defaultChecked={todo.isCompleted}
-                  onChange={(e) => {
-                    updateHadler({
-                      ...todo,
-                      isCompleted: e.currentTarget.checked,
-                    });
-                  }}
-                />
-              </td>
-              <td>
-                <span>{todo.title}</span>
-                {todo.title.length > 20 && (
-                  <StyledTooltip title={todo.title} arrow placement="top">
-                    <div className="tooltip_trigger">
-                      <BsFillExclamationCircleFill />
-                    </div>
-                  </StyledTooltip>
-                )}
-              </td>
-              <td>{tags.find((tag) => tag._id === todo.tag)?.title}</td>
-              <td>
-                <BsPencilSquare
-                  onClick={() => {
-                    setSelectedTodo(todo);
-                    updateModalHandler();
-                  }}
-                />
-              </td>
-              <td>
-                <BsTrashFill
-                  onClick={() => {
-                    deleteHandler(todo._id).then((message) => {
-                      setDeleteMessage(message);
-                      deleteModalHandler();
-                    });
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {isOpenDeleteModal && (
-        <DeleteForm
-          onCloseHandler={deleteModalHandler}
-          message={deleteMessage}
-        />
+    <>
+      {!isEmpty ? (
+        <>
+          <div className="filter-block">
+            <button onClick={() => filterHandler(null)}>All</button>
+            <button onClick={() => filterHandler(true)}>Completed</button>
+            <button onClick={() => filterHandler(false)}>Uncompleted</button>
+          </div>
+          <div className="todo-list">
+            <table>
+              <thead className="todo-list_head">
+                <tr>
+                  {titles.map((title, index) => (
+                    <th key={title.label} colSpan={title.colSpan}>
+                      {title.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="todo-list_body">
+                {todos.map((todo) => (
+                  <tr
+                    key={todo._id}
+                    style={{
+                      background: todo.isCompleted ? "#bdffb8" : "white",
+                    }}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        defaultChecked={todo.isCompleted}
+                        onChange={(e) => {
+                          updateHadler({
+                            ...todo,
+                            isCompleted: e.currentTarget.checked,
+                          });
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <span>{todo.title}</span>
+                      {todo.title.length > 20 && (
+                        <StyledTooltip title={todo.title} arrow placement="top">
+                          <div className="tooltip_trigger">
+                            <BsFillExclamationCircleFill />
+                          </div>
+                        </StyledTooltip>
+                      )}
+                    </td>
+                    <td>{tags.find((tag) => tag._id === todo.tag)?.title}</td>
+                    <td>
+                      <BsPencilSquare
+                        onClick={() => {
+                          setSelectedTodo(todo);
+                          updateModalHandler();
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <BsTrashFill
+                        onClick={() => {
+                          setSelectedTodo(todo);
+                          deleteModalHandler();
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {isOpenDeleteModal && selectedTodo && (
+              <DeleteForm
+                onCloseHandler={deleteModalHandler}
+                id={selectedTodo._id}
+                deleteHandler={deleteHandler}
+                snackBarHandler={snackBarHandler}
+                actionHandler={deleteActionHander}
+              />
+            )}
+            {isOpenUpdateModal && selectedTodo && (
+              <UpdateForm
+                onCloseHandler={updateModalHandler}
+                options={tags}
+                updateHandler={updateHadler}
+                todo={selectedTodo}
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        <EmptyTodos />
       )}
-      {isOpenUpdateModal && selectedTodo && (
-        <UpdateForm
-          onCloseHandler={updateModalHandler}
-          options={tags}
-          updateHandler={updateHadler}
-          todo={selectedTodo}
-        />
-      )}
-    </div>
+      <Snackbar
+        open={isOpenSnackBar}
+        autoHideDuration={3000}
+        onClose={snackBarHandler}
+      >
+        <Alert
+          onClose={snackBarHandler}
+          severity={isSuccessfullyDeleted ? "success" : "info"}
+          sx={{ width: "100%" }}
+        >
+          {isSuccessfullyDeleted ? "Todo was deleted" : "Action was denied"}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 
