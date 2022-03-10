@@ -11,7 +11,7 @@ interface TodoData {
 
 class TodoService {
   async getTodos(userId: ObjectId) {
-    return Todo.find({ user: userId });
+    return Todo.find({ user: userId, isArchive: false });
   }
 
   async create(data: TodoData, userId: ObjectId) {
@@ -45,7 +45,7 @@ class TodoService {
   }
 
   async update(id: ObjectId, data: TodoData) {
-    const updatedTodo = await Todo.findByIdAndUpdate(
+    return Todo.findByIdAndUpdate(
       id,
       {
         title: data.title,
@@ -54,14 +54,14 @@ class TodoService {
       },
       { returnDocument: "after" }
     ).lean();
-
-    return updatedTodo;
   }
 
   async delete(id: ObjectId) {
-    const deleted = await Todo.findByIdAndDelete(id);
-
-    return deleted;
+    return Todo.findByIdAndUpdate(id, {
+      $set: {
+        isArchive: true,
+      },
+    });
   }
 }
 
