@@ -24,8 +24,6 @@ interface Props {
   tags: Array<TagModel>;
   deleteHandler: (id: string) => Promise<string>;
   updateHadler: (todo: TodoModel) => Promise<void>;
-  filterHandler: (filter: boolean | null) => Promise<void>;
-  filterOption: boolean | null;
 }
 
 function TodoList({
@@ -34,8 +32,6 @@ function TodoList({
   tags,
   deleteHandler,
   updateHadler,
-  filterHandler,
-  filterOption,
 }: Props) {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
@@ -65,26 +61,6 @@ function TodoList({
     <>
       {!isEmpty ? (
         <>
-          <div className="filter-block">
-            <button
-              disabled={filterOption === null}
-              onClick={() => filterHandler(null)}
-            >
-              All
-            </button>
-            <button
-              disabled={filterOption === true}
-              onClick={() => filterHandler(true)}
-            >
-              Completed
-            </button>
-            <button
-              disabled={filterOption === false}
-              onClick={() => filterHandler(false)}
-            >
-              Uncompleted
-            </button>
-          </div>
           <div className="todo-list">
             <table>
               <thead className="todo-list_head">

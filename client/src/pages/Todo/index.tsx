@@ -10,6 +10,7 @@ import Loader from "../../components/Loader";
 import { useHistory } from "react-router-dom";
 import CreationForm from "../../components/Modal/Forms/Creation";
 import { Pagination } from "@mui/material";
+import FilterBlock from "../../components/FilterBlock";
 
 function TodoPage() {
   const history = useHistory();
@@ -76,14 +77,16 @@ function TodoPage() {
           <Loader />
         ) : (
           <>
+            <FilterBlock
+              filterHandler={getTodos.bind(todoStore)}
+              filterOption={todoStore.filter}
+            />
             <TodoList
               isEmpty={todoStore.isEmptyTodos()}
               todos={todoStore.todos}
               tags={tagStore.tags}
               deleteHandler={deleteTodo.bind(todoStore)}
               updateHadler={updateTodo.bind(todoStore)}
-              filterHandler={getTodos.bind(todoStore)}
-              filterOption={todoStore.filter}
             />
             <Pagination
               page={todoStore.currentPage}

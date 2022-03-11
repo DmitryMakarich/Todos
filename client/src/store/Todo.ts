@@ -44,6 +44,10 @@ export default class TodoStore {
       return;
     }
 
+    if (filter !== this.filter) {
+      this.currentPage = 1;
+    }
+
     todoService
       .getFilteredTodos(this.currentPage, this.limit, filter)
       .then(({ todos, count }) => {
@@ -51,7 +55,6 @@ export default class TodoStore {
           this.todos = todos;
           this.totalCount = count;
           this.totalPages = Math.ceil(this.totalCount / this.limit);
-          this.currentPage = 1;
           this.filter = filter;
           this.isLoading = false;
         });
@@ -83,7 +86,12 @@ export default class TodoStore {
 
     runInAction(() => {
       if (updatedTodo) {
-        this.todos.splice(todoIndex, 1, updatedTodo);
+        const insertItem =
+          todo.isCompleted === updatedTodo.isCompleted && this.filter !== null
+            ? []
+            : [updatedTodo];
+
+        this.todos.splice(todoIndex, 1, ...insertItem);
       }
     });
   }
