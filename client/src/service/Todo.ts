@@ -10,8 +10,15 @@ class Service extends BaseService {
     );
   }
 
+  public getFilteredTodos(page: number, limit: number, isCompleted: boolean) {
+    return this.requests.get<{ todos: Array<TodoModel>; count: number }>(
+      "/todo",
+      { page, limit, isCompleted }
+    );
+  }
+
   public createTodo(title: string, tagId: string) {
-    return this.requests.post<{ todo: TodoModel; count: number }>("/todo", {
+    return this.requests.post<{ todo: TodoModel }>("/todo", {
       title,
       tagId,
     });
@@ -26,7 +33,7 @@ class Service extends BaseService {
   }
 
   public deleteTodo(id: string) {
-    return this.requests.del<{ message: string; count: number }>(`/todo/${id}`);
+    return this.requests.del<{ message: string }>(`/todo/${id}`);
   }
 }
 

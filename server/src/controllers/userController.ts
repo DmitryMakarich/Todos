@@ -22,7 +22,7 @@ class UserController {
 
       res.json({
         accessToken: token,
-        userId: user.id,
+        userId: user._id,
         userName: user.fullName,
       });
     } catch (e) {

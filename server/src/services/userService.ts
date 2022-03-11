@@ -14,7 +14,7 @@ class UserService {
   async login(data: AuthenticationForm) {
     const { email, password } = data;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).lean();
 
     if (!user) {
       return { user, token: null };
@@ -26,7 +26,7 @@ class UserService {
       return { user: null, token: null };
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
@@ -36,7 +36,7 @@ class UserService {
   async register(data: AuthenticationForm) {
     const { fullName, email, password } = data;
 
-    const candidate = await User.findOne({ email });
+    const candidate = await User.findOne({ email }).lean();
 
     if (candidate) {
       return null;

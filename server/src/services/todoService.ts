@@ -10,12 +10,28 @@ interface TodoData {
 }
 
 class TodoService {
-  async getTodos(userId: ObjectId, limit: number, page: number) {
-    const todos = await Todo.find({ user: userId, isArchive: false })
-      .limit(limit)
-      .skip((page - 1) * limit);
+  async getTodos(
+    userId: ObjectId,
+    limit: number,
+    page: number,
+    filter?: boolean
+  ) {
+    const isCompleted = !filter ? [true, false] : filter;
 
-    const count = await Todo.countDocuments({ user: userId, isArchive: false });
+    const todos = await Todo.find({
+      user: userId,
+      isArchive: false,
+      isCompleted,
+    })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .lean();
+
+    const count = await Todo.countDocuments({
+      user: userId,
+      isArchive: false,
+      isCompleted,
+    });
 
     return { todos, count };
   }
@@ -45,9 +61,7 @@ class TodoService {
 
     session.endSession();
 
-    const count = await Todo.countDocuments({ user: userId, isArchive: false });
-
-    return { todo, count };
+    return todo.toObject();
   }
 
   async update(id: ObjectId, data: TodoData) {
@@ -62,16 +76,14 @@ class TodoService {
     ).lean();
   }
 
-  async delete(id: ObjectId, userId: ObjectId) {
+  async delete(id: ObjectId) {
     const todo = await Todo.findByIdAndUpdate(id, {
       $set: {
         isArchive: true,
       },
     });
 
-    const count = await Todo.countDocuments({ user: userId, isArchive: false });
-
-    return { todo, count };
+    return todo;
   }
 }
 

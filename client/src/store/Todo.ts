@@ -7,21 +7,13 @@ export default class TodoStore {
   todos: Array<TodoModel> = [];
   isLoading: boolean = true;
   totalPages = 0;
+  totalCount = 0;
   limit = 5;
   currentPage = 1;
+  filter: boolean | null = null;
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  getTodos(isCompleted: boolean | null) {
-    return this.todos.filter((todo) => {
-      if (isCompleted === null) {
-        return todo;
-      }
-
-      return todo.isCompleted === isCompleted;
-    });
   }
 
   setCurrentPage(value: number) {
@@ -36,22 +28,50 @@ export default class TodoStore {
     todoService.getTodos(this.currentPage, this.limit).then((data) => {
       runInAction(() => {
         this.todos = data.todos;
+        this.totalCount = data.count;
+        this.totalPages = Math.ceil(this.totalCount / this.limit);
+        this.filter = null;
         this.isLoading = false;
-        this.totalPages = Math.ceil(data.count / this.limit);
       });
     });
   }
 
+  async getTodos(filter: boolean | null) {
+    this.isLoading = true;
+
+    if (filter === null) {
+      this.init();
+      return;
+    }
+
+    todoService
+      .getFilteredTodos(this.currentPage, this.limit, filter)
+      .then(({ todos, count }) => {
+        runInAction(() => {
+          this.todos = todos;
+          this.totalCount = count;
+          this.totalPages = Math.ceil(this.totalCount / this.limit);
+          this.currentPage = 1;
+          this.filter = filter;
+          this.isLoading = false;
+        });
+      });
+  }
+
   async createTodo(title: string, tagId: string) {
     this.isLoading = true;
-    const result = (await todoService.createTodo(title, tagId)).data;
+    const { data, status } = await todoService.createTodo(title, tagId);
 
     runInAction(() => {
-      if (result.todo && this.todos.length < this.limit) {
-        this.todos.push(result.todo);
+      if (status === 201) {
+        this.totalCount += 1;
       }
 
-      this.totalPages = Math.ceil(result.count / this.limit);
+      if (data.todo && this.todos.length < this.limit) {
+        this.todos.push(data.todo);
+      }
+
+      this.totalPages = Math.ceil(this.totalCount / this.limit);
 
       this.isLoading = false;
     });
@@ -72,11 +92,12 @@ export default class TodoStore {
     const response = await todoService.deleteTodo(id);
 
     runInAction(() => {
-      if (response.status === 200) {
+      if (response.status === 204) {
         this.todos = this.todos.filter((todo) => todo._id !== id);
+        this.totalCount -= 1;
       }
 
-      this.totalPages = Math.ceil(response.data.count / this.limit);
+      this.totalPages = Math.ceil(this.totalCount / this.limit);
 
       if (this.totalPages === 0) {
         this.setCurrentPage(1);

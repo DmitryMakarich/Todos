@@ -12,10 +12,11 @@ import { titles } from "../../utils/TableTitles";
 import DeleteForm from "../Modal/Forms/Delete";
 import UpdateForm from "../Modal/Forms/Update";
 
-import "./index.scss";
 import { StyledTooltip } from "../Tooltip";
 import EmptyTodos from "../EmptyTodos";
 import CustomSnackBar from "../SnackBar";
+
+import "./index.scss";
 
 interface Props {
   isEmpty: boolean;
@@ -23,7 +24,8 @@ interface Props {
   tags: Array<TagModel>;
   deleteHandler: (id: string) => Promise<string>;
   updateHadler: (todo: TodoModel) => Promise<void>;
-  filterHandler: Function;
+  filterHandler: (filter: boolean | null) => Promise<void>;
+  filterOption: boolean | null;
 }
 
 function TodoList({
@@ -33,6 +35,7 @@ function TodoList({
   deleteHandler,
   updateHadler,
   filterHandler,
+  filterOption,
 }: Props) {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
@@ -63,9 +66,24 @@ function TodoList({
       {!isEmpty ? (
         <>
           <div className="filter-block">
-            <button onClick={() => filterHandler(null)}>All</button>
-            <button onClick={() => filterHandler(true)}>Completed</button>
-            <button onClick={() => filterHandler(false)}>Uncompleted</button>
+            <button
+              disabled={filterOption === null}
+              onClick={() => filterHandler(null)}
+            >
+              All
+            </button>
+            <button
+              disabled={filterOption === true}
+              onClick={() => filterHandler(true)}
+            >
+              Completed
+            </button>
+            <button
+              disabled={filterOption === false}
+              onClick={() => filterHandler(false)}
+            >
+              Uncompleted
+            </button>
           </div>
           <div className="todo-list">
             <table>

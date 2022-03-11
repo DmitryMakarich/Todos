@@ -3,11 +3,11 @@ import Tag from "../models/Tag";
 
 class TagService {
   async getTag(id: ObjectId) {
-    return Tag.find({ _id: id }).lean();
+    return Tag.findById(id).lean();
   }
 
   async getAllTags() {
-    return Tag.find();
+    return Tag.find().lean();
   }
 }
 

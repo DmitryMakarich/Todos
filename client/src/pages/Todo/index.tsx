@@ -15,21 +15,17 @@ function TodoPage() {
   const history = useHistory();
   const { userStore, todoStore, tagStore } = useStore();
 
-  const { createTodo, deleteTodo, updateTodo, currentPage } = todoStore;
+  const { createTodo, deleteTodo, updateTodo, currentPage, getTodos } =
+    todoStore;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
 
   const openModalHandler = () => {
     setIsOpenModal(!isOpenModal);
   };
 
-  const filterhandler = (filter: boolean | null) => {
-    setIsCompleted(filter);
-  };
-
   useEffect(() => {
-    todoStore.init();
+    todoStore.getTodos(todoStore.filter);
 
     return () => {
       todoStore.dispose();
@@ -82,11 +78,12 @@ function TodoPage() {
           <>
             <TodoList
               isEmpty={todoStore.isEmptyTodos()}
-              todos={todoStore.getTodos(isCompleted)}
+              todos={todoStore.todos}
               tags={tagStore.tags}
               deleteHandler={deleteTodo.bind(todoStore)}
               updateHadler={updateTodo.bind(todoStore)}
-              filterHandler={filterhandler}
+              filterHandler={getTodos.bind(todoStore)}
+              filterOption={todoStore.filter}
             />
             <Pagination
               page={todoStore.currentPage}

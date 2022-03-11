@@ -28,8 +28,7 @@ export default class UserStore {
   }
 
   async register(email: string, password: string, fullName: string) {
-    const status = (await userService.register(email, password, fullName))
-      .status;
+    const { status } = await userService.register(email, password, fullName);
 
     if (status === 201) {
       this.login(email, password);

@@ -8,7 +8,7 @@ export default function EmptyTodos() {
   return (
     <div className="empty-list">
       <BsEmojiSmileUpsideDown />
-      <span>Ooooops, your todo list is empty, let's create first todo</span>
+      <span>No todos matching given criteria</span>
     </div>
   );
 }
