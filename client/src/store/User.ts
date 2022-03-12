@@ -14,13 +14,13 @@ export default class UserStore {
   async init() {}
 
   async login(email: string, password: string) {
-    userService.login(email, password).then((result) => {
-      window.localStorage.setItem("accessToken", result.data.accessToken);
+    userService.login(email, password).then(({data}) => {
+      window.localStorage.setItem("accessToken", data.accessToken);
 
       runInAction(() => {
         this.user = {
-          userId: result.data.userId,
-          userName: result.data.userName,
+          userId: data.userId,
+          userName: data.userName,
         };
         this.isLogging = true;
       });

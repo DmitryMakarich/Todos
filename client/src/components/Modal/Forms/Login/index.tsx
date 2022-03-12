@@ -6,6 +6,9 @@ import TextInput from "../../../TextInput";
 import * as Yup from "yup";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../store";
+import { useDispatch } from "react-redux";
+import { login } from "../../../../redux/store/action-creators/user";
+import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
 
 interface Props {
   onCloseHandler: Function;
@@ -19,7 +22,9 @@ const LoginSchema = Yup.object().shape({
 });
 
 function LoginForm({ onCloseHandler }: Props) {
-  const { userStore } = useStore();
+  // const { userStore } = useStore();
+  const { error } = UseTypeSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   return (
     <Modal onCloseHandler={onCloseHandler}>
@@ -30,10 +35,23 @@ function LoginForm({ onCloseHandler }: Props) {
           values: { email: string; password: string },
           { setErrors }
         ) => {
-          userStore
-            .login(values.email, values.password)
-            .then(() => onCloseHandler())
-            .catch(() => setErrors({ password: "Неверный логин или пароль" }));
+          dispatch(login(values.email, values.password));
+
+          console.log("error", error);
+
+          if (error) {
+            console.log("from if");
+
+            setErrors({ password: error });
+            // return;
+          }
+
+          // onCloseHandler();
+
+          // userStore
+          //   .login(values.email, values.password)
+          //   .then(() => onCloseHandler())
+          //   .catch(() => setErrors({ password: "Неверный логин или пароль" }));
         }}
       >
         {({ handleSubmit }) => (
@@ -56,4 +74,4 @@ function LoginForm({ onCloseHandler }: Props) {
   );
 }
 
-export default observer(LoginForm);
+export default LoginForm;

@@ -5,9 +5,16 @@ import LoginForm from "../../components/Modal/Forms/Login";
 import RegisterForm from "../../components/Modal/Forms/Register";
 import "./index.scss";
 import { observer } from "mobx-react-lite";
+import { UseTypeSelector } from "../../hooks/useTypeSelector";
 
 function HomePage() {
-  const { userStore } = useStore();
+  const { user, error, isLogging } = UseTypeSelector((state) => state.user);
+
+  console.log("user", user);
+
+  /////////
+
+  // const { userStore } = useStore();
 
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);
@@ -25,11 +32,9 @@ function HomePage() {
     <section className="home-page">
       <div className="home-page_content">
         <div className="home-page_content_title">Todo List</div>
-        {userStore.isLogging ? (
+        {isLogging ? (
           <button
-            onClick={() =>
-              history.push("/todo", { userName: userStore.user?.userName })
-            }
+            onClick={() => history.push("/todo")}
             className="home-page_content_start-button"
           >
             Go to Todos
@@ -51,4 +56,4 @@ function HomePage() {
   );
 }
 
-export default observer(HomePage);
+export default HomePage;
