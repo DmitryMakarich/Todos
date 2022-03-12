@@ -1,29 +1,26 @@
-import { Dispatch } from "react";
-import { UserAction, UserActionTypes } from "../../types/user";
-import userService from "../../../service/User";
+import { UserActionTypes } from "../../types/user";
 
-export const login = (login: string, password: string) => {
-  return async (dispatch: Dispatch<UserAction>) => {
-    try {
-      dispatch({ type: UserActionTypes.LOGIN_USER });
+export const loginUserAction = (email: string, password: string) => {
+  return {
+    type: UserActionTypes.LOGIN_USER,
+    formData: {
+      email,
+      password,
+    },
+  };
+};
 
-      const { data } = await userService.login(login, password);
-      window.localStorage.setItem("accessToken", data.accessToken);
-
-      dispatch({
-        type: UserActionTypes.LOGIN_USER_SUCCESS,
-        payload: {
-          userId: data.userId,
-          userName: data.userName,
-        },
-      });
-    } catch (e) {
-      console.log("error");
-
-      dispatch({
-        type: UserActionTypes.LOGIN_USER_ERROR,
-        payload: "Неверный логин или пароль",
-      });
-    }
+export const registerUserAction = (
+  userName: string,
+  email: string,
+  password: string
+) => {
+  return {
+    type: UserActionTypes.REGISTER_USER,
+    formData: {
+      userName,
+      email,
+      password,
+    },
   };
 };

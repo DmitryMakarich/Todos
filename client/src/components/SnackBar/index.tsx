@@ -3,7 +3,9 @@ import { Alert, Snackbar } from "@mui/material";
 
 interface Props {
   isOpenSnackBar: boolean;
-  isSuccessfullyDeleted: boolean | null;
+  isSuccessfully: boolean | null;
+  successMessage: string;
+  deniedMessage?: string;
   snackBarHandler:
     | ((event: React.SyntheticEvent<Element, Event>) => void)
     | undefined;
@@ -11,20 +13,19 @@ interface Props {
 
 export default function CustomSnackBar({
   isOpenSnackBar,
-  isSuccessfullyDeleted,
+  isSuccessfully,
+  successMessage,
+  deniedMessage,
   snackBarHandler,
 }: Props) {
   return (
-    <Snackbar
-      open={isOpenSnackBar}
-      autoHideDuration={3000}
-    >
+    <Snackbar open={isOpenSnackBar} autoHideDuration={3000}>
       <Alert
         onClose={snackBarHandler}
-        severity={isSuccessfullyDeleted ? "success" : "info"}
+        severity={isSuccessfully ? "success" : "info"}
         sx={{ width: "100%" }}
       >
-        {isSuccessfullyDeleted ? "Todo was deleted" : "Action was denied"}
+        {isSuccessfully ? successMessage : deniedMessage}
       </Alert>
     </Snackbar>
   );

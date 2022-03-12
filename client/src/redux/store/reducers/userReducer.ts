@@ -11,12 +11,12 @@ export const userReducer = (
   action: UserAction
 ): UserState => {
   switch (action.type) {
-    case UserActionTypes.LOGIN_USER:
-      return { isLogging: false, user: null, error: null };
     case UserActionTypes.LOGIN_USER_SUCCESS:
-      return { isLogging: true, user: action.payload, error: null };
+      return { ...state, isLogging: true, user: action.payload, error: null };
     case UserActionTypes.LOGIN_USER_ERROR:
-      return { isLogging: false, user: null, error: action.payload };
+      return { ...state, isLogging: false, user: null, error: action.payload };
+    case UserActionTypes.REGISTER_USER_ERROR:
+      return { ...state, isLogging: false, user: null, error: action.payload };
     default:
       return state;
   }

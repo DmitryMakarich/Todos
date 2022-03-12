@@ -4,8 +4,12 @@ import { Form, Formik } from "formik";
 import "../index.scss";
 import TextInput from "../../../TextInput";
 import * as Yup from "yup";
-import { useStore } from "../../../../store";
-import { observer } from "mobx-react-lite";
+import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { registerUserAction } from "../../../../redux/store/action-creators/user";
+import CustomSnackBar from "../../../SnackBar";
+import { UserAction, UserActionTypes } from "../../../../redux/types/user";
 
 interface Props {
   onCloseHandler: Function;
@@ -20,27 +24,47 @@ const LoginSchema = Yup.object().shape({
 });
 
 function RegisterForm({ onCloseHandler }: Props) {
-  const { userStore } = useStore();
+  const [isOpenSnackBar, setIsOpenSnackBar] = useState(false);
+
+  const { error, isLogging } = UseTypeSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLogging) {
+      setIsOpenSnackBar(true);
+      onCloseHandler();
+    }
+    return () => {
+      dispatch({
+        type: UserActionTypes.REGISTER_USER_ERROR,
+        payload: null,
+      });
+    };
+  }, [isLogging]);
+
+  useEffect(() => {
+    if (error) {
+      setIsOpenSnackBar(true);
+    }
+  }, [error]);
+
+  const openSnackBarHandler = () => {
+    setIsOpenSnackBar(!isOpenSnackBar);
+  };
 
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik
         initialValues={{ userName: "", email: "", password: "" }}
         validationSchema={LoginSchema}
-        onSubmit={(
-          values: {
-            email: string;
-            password: string;
-            userName: string;
-          },
-          { setErrors }
-        ) => {
-          userStore
-            .register(values.email, values.password, values.userName)
-            .then(() => onCloseHandler())
-            .catch(() =>
-              setErrors({ password: "Такой пользователь уже существует" })
-            );
+        onSubmit={(values: {
+          email: string;
+          password: string;
+          userName: string;
+        }) => {
+          dispatch(
+            registerUserAction(values.userName, values.email, values.password)
+          );
         }}
       >
         {({ handleSubmit }) => (
@@ -60,8 +84,15 @@ function RegisterForm({ onCloseHandler }: Props) {
           </Form>
         )}
       </Formik>
+      <CustomSnackBar
+        isOpenSnackBar={isOpenSnackBar}
+        isSuccessfully={!error}
+        deniedMessage={error!}
+        successMessage={"User created"}
+        snackBarHandler={openSnackBarHandler}
+      />
     </Modal>
   );
 }
 
-export default observer(RegisterForm);
+export default RegisterForm;

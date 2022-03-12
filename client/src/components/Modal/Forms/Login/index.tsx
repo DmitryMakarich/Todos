@@ -4,11 +4,11 @@ import { Form, Formik } from "formik";
 import "../index.scss";
 import TextInput from "../../../TextInput";
 import * as Yup from "yup";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../../store";
 import { useDispatch } from "react-redux";
-import { login } from "../../../../redux/store/action-creators/user";
+import { loginUserAction } from "../../../../redux/store/action-creators/user";
 import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
+import { useEffect, useState } from "react";
+import CustomSnackBar from "../../../SnackBar";
 
 interface Props {
   onCloseHandler: Function;
@@ -22,36 +22,34 @@ const LoginSchema = Yup.object().shape({
 });
 
 function LoginForm({ onCloseHandler }: Props) {
-  // const { userStore } = useStore();
-  const { error } = UseTypeSelector((state) => state.user);
+  const [isOpenSnackBar, setIsOpenSnackBar] = useState(false);
+
+  const { error, isLogging } = UseTypeSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLogging) {
+      onCloseHandler();
+    }
+  }, [isLogging]);
+
+  useEffect(() => {
+    if (error) {
+      setIsOpenSnackBar(true);
+    }
+  }, [error]);
+
+  const openSnackBarHandler = () => {
+    setIsOpenSnackBar(!isOpenSnackBar);
+  };
 
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={LoginSchema}
-        onSubmit={(
-          values: { email: string; password: string },
-          { setErrors }
-        ) => {
-          dispatch(login(values.email, values.password));
-
-          console.log("error", error);
-
-          if (error) {
-            console.log("from if");
-
-            setErrors({ password: error });
-            // return;
-          }
-
-          // onCloseHandler();
-
-          // userStore
-          //   .login(values.email, values.password)
-          //   .then(() => onCloseHandler())
-          //   .catch(() => setErrors({ password: "Неверный логин или пароль" }));
+        onSubmit={(values: { email: string; password: string }) => {
+          dispatch(loginUserAction(values.email, values.password));
         }}
       >
         {({ handleSubmit }) => (
@@ -70,6 +68,13 @@ function LoginForm({ onCloseHandler }: Props) {
           </Form>
         )}
       </Formik>
+      <CustomSnackBar
+        isOpenSnackBar={isOpenSnackBar}
+        isSuccessfully={!error}
+        deniedMessage={error!}
+        successMessage={"Log in success"}
+        snackBarHandler={openSnackBarHandler}
+      />
     </Modal>
   );
 }

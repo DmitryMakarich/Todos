@@ -147,7 +147,9 @@ function TodoList({
       )}
       <CustomSnackBar
         isOpenSnackBar={isOpenSnackBar}
-        isSuccessfullyDeleted={isSuccessfullyDeleted}
+        isSuccessfully={isSuccessfullyDeleted}
+        successMessage={"Todo was deleted"}
+        deniedMessage={"Todo was denied"}
         snackBarHandler={snackBarHandler}
       />
     </>

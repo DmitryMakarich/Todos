@@ -11,7 +11,7 @@ class Service extends BaseService {
   }
 
   public register(email: string, password: string, fullName: string) {
-    return this.requests.post<any>("/auth/register", {
+    return this.requests.post<{ message: string }>("/auth/register", {
       email,
       password,
       fullName,

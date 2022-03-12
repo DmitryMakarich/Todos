@@ -1,20 +1,12 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useStore } from "../../store";
 import LoginForm from "../../components/Modal/Forms/Login";
 import RegisterForm from "../../components/Modal/Forms/Register";
 import "./index.scss";
-import { observer } from "mobx-react-lite";
 import { UseTypeSelector } from "../../hooks/useTypeSelector";
 
 function HomePage() {
-  const { user, error, isLogging } = UseTypeSelector((state) => state.user);
-
-  console.log("user", user);
-
-  /////////
-
-  // const { userStore } = useStore();
+  const { isLogging } = UseTypeSelector((state) => state.user);
 
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);

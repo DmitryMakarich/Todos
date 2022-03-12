@@ -10,10 +10,8 @@ export enum UserActionTypes {
   LOGIN_USER = "LOGIN_USER",
   LOGIN_USER_SUCCESS = "LOGIN_USER_SUCCESS",
   LOGIN_USER_ERROR = "LOGIN_USER_ERROR",
-}
-
-interface LoginUserAction {
-  type: UserActionTypes.LOGIN_USER;
+  REGISTER_USER = "REGISTER_USER",
+  REGISTER_USER_ERROR = "REGISTER_USER_ERROR",
 }
 
 interface LoginUserSuccessAction {
@@ -23,10 +21,15 @@ interface LoginUserSuccessAction {
 
 interface LoginUserErrorAction {
   type: UserActionTypes.LOGIN_USER_ERROR;
-  payload: string;
+  payload: string | null;
+}
+
+interface RegisterUserErrorAction {
+  type: UserActionTypes.REGISTER_USER_ERROR;
+  payload: string | null;
 }
 
 export type UserAction =
-  | LoginUserAction
   | LoginUserSuccessAction
-  | LoginUserErrorAction;
+  | LoginUserErrorAction
+  | RegisterUserErrorAction;
