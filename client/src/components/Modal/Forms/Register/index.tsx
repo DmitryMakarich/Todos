@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { registerUserAction } from "../../../../redux/store/action-creators/user";
 import CustomSnackBar from "../../../SnackBar";
-import { UserAction, UserActionTypes } from "../../../../redux/types/user";
+import { UserActionTypes } from "../../../../redux/types/user";
 
 interface Props {
   onCloseHandler: Function;

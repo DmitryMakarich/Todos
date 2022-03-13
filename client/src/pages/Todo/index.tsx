@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import { BsCardChecklist } from "react-icons/bs";
-import { observer } from "mobx-react-lite";
 import { useStore } from "../../store";
 
 import "./index.scss";
@@ -11,44 +10,54 @@ import { useHistory } from "react-router-dom";
 import CreationForm from "../../components/Modal/Forms/Creation";
 import { Pagination } from "@mui/material";
 import FilterBlock from "../../components/FilterBlock";
+import { useDispatch } from "react-redux";
+import { UserActionTypes } from "../../redux/types/user";
+import { UseTypeSelector } from "../../hooks/useTypeSelector";
+import { getTagAction } from "../../redux/store/action-creators/tag";
+import {
+  getTodosAction,
+} from "../../redux/store/action-creators/todo";
+import { TodoActionTypes } from "../../redux/types/todo";
 
 function TodoPage() {
   const history = useHistory();
-  const { userStore, todoStore, tagStore } = useStore();
-
-  const { createTodo, deleteTodo, updateTodo, currentPage, getTodos } =
-    todoStore;
-
   const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const {
+    tag: { tags },
+    todo,
+  } = UseTypeSelector((state) => state);
+  const dispatch = useDispatch();
+
+  const { todos, limit, currentPage, isLoading, totalPages } = todo;
+
+  const { todoStore } = useStore();
+
+  console.log("totalPages", totalPages);
+
+  const { deleteTodo, updateTodo, getTodos } = todoStore;
+
+  useEffect(() => {
+    dispatch(getTagAction());
+  }, []);
+
+  useEffect(() => {
+    dispatch(getTodosAction(currentPage, limit));
+  }, [currentPage]);
 
   const openModalHandler = () => {
     setIsOpenModal(!isOpenModal);
   };
 
-  useEffect(() => {
-    todoStore.getTodos(todoStore.filter);
-
-    return () => {
-      todoStore.dispose();
-    };
-  }, [todoStore, currentPage]);
-
-  useEffect(() => {
-    tagStore.init();
-
-    return () => {
-      tagStore.dispose();
-    };
-  }, [tagStore]);
-
   return (
     <div className="todo-page">
       <header className="todo-page_header">
         <BsCardChecklist className="todo-page_header_logo" />
+
         <button
           className="todo-page_header_btn"
           onClick={() => {
-            userStore.logout();
+            dispatch({ type: UserActionTypes.LOGOUT_USER });
             history.push("/");
           }}
         >
@@ -61,7 +70,7 @@ function TodoPage() {
           className="todo-page_body_create-btn"
           onClick={openModalHandler}
           style={
-            !todoStore.todos.length
+            !todos.length
               ? {
                   border: "5px solid white",
                   animationDuration: "3s",
@@ -73,7 +82,7 @@ function TodoPage() {
         >
           Create todo
         </button>
-        {todoStore.isLoading ? (
+        {isLoading && tags.length ? (
           <Loader />
         ) : (
           <>
@@ -82,17 +91,22 @@ function TodoPage() {
               filterOption={todoStore.filter}
             />
             <TodoList
-              isEmpty={todoStore.isEmptyTodos()}
-              todos={todoStore.todos}
-              tags={tagStore.tags}
+              isEmpty={todos.length === 0}
+              todos={todos}
+              tags={tags}
               deleteHandler={deleteTodo.bind(todoStore)}
               updateHadler={updateTodo.bind(todoStore)}
             />
             <Pagination
-              page={todoStore.currentPage}
-              onChange={(_, value) => todoStore.setCurrentPage(value)}
+              page={currentPage}
+              onChange={(_, value) =>
+                dispatch({
+                  type: TodoActionTypes.SET_CURRENT_PAGE,
+                  payload: { page: value },
+                })
+              }
               className="todo-page_body_links"
-              count={todoStore.totalPages}
+              count={totalPages}
               color="primary"
               hidePrevButton
               hideNextButton
@@ -104,13 +118,12 @@ function TodoPage() {
       {isOpenModal && (
         <CreationForm
           onCloseHandler={openModalHandler}
-          createHandler={createTodo.bind(todoStore)}
-          options={tagStore.tags}
-          isLoading={todoStore.isLoading}
+          options={tags}
+          isLoading={isLoading}
         />
       )}
     </div>
   );
 }
 
-export default observer(TodoPage);
+export default TodoPage;

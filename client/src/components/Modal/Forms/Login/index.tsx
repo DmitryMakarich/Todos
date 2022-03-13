@@ -9,6 +9,7 @@ import { loginUserAction } from "../../../../redux/store/action-creators/user";
 import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
 import { useEffect, useState } from "react";
 import CustomSnackBar from "../../../SnackBar";
+import { UserActionTypes } from "../../../../redux/types/user";
 
 interface Props {
   onCloseHandler: Function;
@@ -31,6 +32,13 @@ function LoginForm({ onCloseHandler }: Props) {
     if (isLogging) {
       onCloseHandler();
     }
+
+    return () => {
+      dispatch({
+        type: UserActionTypes.LOGIN_USER_ERROR,
+        payload: null,
+      });
+    };
   }, [isLogging]);
 
   useEffect(() => {

@@ -7,12 +7,13 @@ import TextInput from "../../../TextInput";
 import "../index.scss";
 import SelectField from "../../../SelectField";
 import TagModel from "../../../../model/Tag";
+import { useDispatch } from "react-redux";
+import { addTodoAction } from "../../../../redux/store/action-creators/todo";
 
 interface Props {
   onCloseHandler: Function;
   options: Array<TagModel>;
   isLoading: boolean;
-  createHandler: (title: string, tagId: string) => Promise<void>;
 }
 
 const CreationSchema = Yup.object().shape({
@@ -23,18 +24,17 @@ const CreationSchema = Yup.object().shape({
 export default function CreationForm({
   onCloseHandler,
   options,
-  createHandler,
   isLoading,
 }: Props) {
+  const dispatch = useDispatch();
+
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik
         initialValues={{ title: "", tag: "" }}
         validationSchema={CreationSchema}
-        onSubmit={(values: { title: string; tag: string }, { setErrors }) => {
-          createHandler(values.title, values.tag)
-            .then(() => onCloseHandler())
-            .catch(() => setErrors({ tag: "Неправильные данные" }));
+        onSubmit={(values: { title: string; tag: string }) => {
+          dispatch(addTodoAction(values.title, values.tag));
         }}
       >
         {({ handleSubmit }) => (

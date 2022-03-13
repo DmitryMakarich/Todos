@@ -1,8 +1,8 @@
 import { AxiosResponse } from "axios";
 import { put, call } from "redux-saga/effects";
-import AuthConfigModel from "../../../model/AuthConfig";
-import userService from "../../../service/User";
-import { UserActionTypes } from "../../types/user";
+import AuthConfigModel from "../../../../model/AuthConfig";
+import userService from "../../../../service/User";
+import { UserActionTypes } from "../../../types/user";
 
 interface PayloadProps {
   type: UserActionTypes;
@@ -58,4 +58,8 @@ export function* loginSaga({ type, formData }: PayloadProps): any {
       payload: "Incorrect login or password",
     });
   }
+}
+
+export function* logoutSaga(): any {
+  yield window.localStorage.removeItem("accessToken");
 }

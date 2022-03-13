@@ -4,15 +4,15 @@ import TodoStore from "./Todo";
 import TagStore from "./Tag";
 
 interface Store {
-  userStore: UserStore;
+  // userStore: UserStore;
   todoStore: TodoStore;
-  tagStore: TagStore;
+  // tagStore: TagStore;
 }
 
 export const store: Store = {
-  userStore: new UserStore(),
+  // userStore: new UserStore(),
   todoStore: new TodoStore(),
-  tagStore: new TagStore(),
+  // tagStore: new TagStore(),
 };
 
 export const StoreContext = createContext(store);
