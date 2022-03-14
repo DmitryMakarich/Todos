@@ -13,7 +13,7 @@ interface Props {
   onCloseHandler: Function;
   options: Array<TagModel>;
   todo: TodoModel;
-  updateHandler: (todo: TodoModel) => Promise<void>;
+  updateHandler: Function;
 }
 
 const CreationSchema = Yup.object().shape({
@@ -32,10 +32,8 @@ export default function UpdateForm({
       <Formik
         initialValues={{ title: todo.title, tag: todo.tag }}
         validationSchema={CreationSchema}
-        onSubmit={(values: { title: string; tag: string }, { setErrors }) => {
-          updateHandler({ ...todo, title: values.title, tag: values.tag })
-            .then(() => onCloseHandler())
-            .catch(() => setErrors({ tag: "Неправильные данные" }));
+        onSubmit={(values: { title: string; tag: string }) => {
+          updateHandler({ ...todo, title: values.title, tag: values.tag });
         }}
       >
         {({ handleSubmit }) => (

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { observer } from "mobx-react-lite";
 
 import { BsTrashFill } from "react-icons/bs";
 import { BsPencilSquare } from "react-icons/bs";
@@ -22,8 +21,8 @@ interface Props {
   isEmpty: boolean;
   todos: Array<TodoModel>;
   tags: Array<TagModel>;
-  deleteHandler: (id: string) => Promise<string>;
-  updateHadler: (todo: TodoModel) => Promise<void>;
+  deleteHandler: Function;
+  updateHadler: Function;
 }
 
 function TodoList({
@@ -149,11 +148,11 @@ function TodoList({
         isOpenSnackBar={isOpenSnackBar}
         isSuccessfully={isSuccessfullyDeleted}
         successMessage={"Todo was deleted"}
-        deniedMessage={"Todo was denied"}
+        deniedMessage={"Action was canceled"}
         snackBarHandler={snackBarHandler}
       />
     </>
   );
 }
 
-export default observer(TodoList);
+export default TodoList;

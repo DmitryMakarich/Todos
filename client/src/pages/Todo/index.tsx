@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import { BsCardChecklist } from "react-icons/bs";
-import { useStore } from "../../store";
 
 import "./index.scss";
 import TodoList from "../../components/TodoList";
@@ -16,8 +15,11 @@ import { UseTypeSelector } from "../../hooks/useTypeSelector";
 import { getTagAction } from "../../redux/store/action-creators/tag";
 import {
   getTodosAction,
+  removeTodoAction,
+  updateTodoAction,
 } from "../../redux/store/action-creators/todo";
 import { TodoActionTypes } from "../../redux/types/todo";
+import TodoModel from "../../model/Todo";
 
 function TodoPage() {
   const history = useHistory();
@@ -29,24 +31,30 @@ function TodoPage() {
   } = UseTypeSelector((state) => state);
   const dispatch = useDispatch();
 
-  const { todos, limit, currentPage, isLoading, totalPages } = todo;
-
-  const { todoStore } = useStore();
-
-  console.log("totalPages", totalPages);
-
-  const { deleteTodo, updateTodo, getTodos } = todoStore;
+  const { todos, limit, currentPage, isLoading, totalPages, filter } = todo;
 
   useEffect(() => {
     dispatch(getTagAction());
   }, []);
 
   useEffect(() => {
-    dispatch(getTodosAction(currentPage, limit));
-  }, [currentPage]);
+    dispatch(getTodosAction(currentPage, limit, filter));
+  }, [currentPage, filter]);
 
   const openModalHandler = () => {
     setIsOpenModal(!isOpenModal);
+  };
+
+  const updateTodoHandler = (updateTodo: TodoModel) => {
+    dispatch(updateTodoAction(updateTodo));
+  };
+
+  const deleteTodoHandler = (id: string) => {
+    dispatch(removeTodoAction(id));
+  };
+
+  const setFilterHandler = (filter: null | boolean) => {
+    dispatch({ type: TodoActionTypes.SET_FILTER, payload: filter });
   };
 
   return (
@@ -82,27 +90,27 @@ function TodoPage() {
         >
           Create todo
         </button>
-        {isLoading && tags.length ? (
+        {isLoading ? (
           <Loader />
         ) : (
           <>
             <FilterBlock
-              filterHandler={getTodos.bind(todoStore)}
-              filterOption={todoStore.filter}
+              filterHandler={setFilterHandler}
+              filterOption={filter}
             />
             <TodoList
               isEmpty={todos.length === 0}
               todos={todos}
               tags={tags}
-              deleteHandler={deleteTodo.bind(todoStore)}
-              updateHadler={updateTodo.bind(todoStore)}
+              deleteHandler={deleteTodoHandler}
+              updateHadler={updateTodoHandler}
             />
             <Pagination
               page={currentPage}
               onChange={(_, value) =>
                 dispatch({
                   type: TodoActionTypes.SET_CURRENT_PAGE,
-                  payload: { page: value },
+                  payload: value,
                 })
               }
               className="todo-page_body_links"

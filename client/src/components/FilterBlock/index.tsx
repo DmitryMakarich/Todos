@@ -3,7 +3,7 @@ import React from "react";
 import "./index.scss";
 
 interface Props {
-  filterHandler: (filter: boolean | null) => Promise<void>;
+  filterHandler: Function;
   filterOption: boolean | null;
 }
 

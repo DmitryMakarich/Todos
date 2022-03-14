@@ -3,17 +3,10 @@ import BaseService from "./Base";
 import TodoModel from "../model/Todo";
 
 class Service extends BaseService {
-  public getTodos(page: number, limit: number) {
+  public getTodos(page: number, limit: number, isCompleted: boolean | null) {
     return this.requests.get<{ todos: Array<TodoModel>; count: number }>(
       "/todo",
-      { page, limit }
-    );
-  }
-
-  public getFilteredTodos(page: number, limit: number, isCompleted: boolean) {
-    return this.requests.get<{ todos: Array<TodoModel>; count: number }>(
-      "/todo",
-      { page, limit, isCompleted }
+      isCompleted === null ? { page, limit } : { page, limit, isCompleted }
     );
   }
 

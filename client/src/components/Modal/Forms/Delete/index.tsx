@@ -1,12 +1,11 @@
+import React, { useEffect } from "react";
 import { Form, Formik } from "formik";
-import React from "react";
 import Modal from "../..";
-import TodoModel from "../../../../model/Todo";
 
 interface Props {
   onCloseHandler: Function;
   id: string;
-  deleteHandler: (id: string) => Promise<string>;
+  deleteHandler: Function;
   snackBarHandler: Function;
   actionHandler: Function;
 }
@@ -23,11 +22,12 @@ export default function DeleteForm({
       <Formik
         initialValues={{ id }}
         onSubmit={(values: { id: string }) => {
-          deleteHandler(values.id).then(() => {
-            actionHandler(true);
-            snackBarHandler();
-            onCloseHandler();
-          });
+          deleteHandler(values.id);
+          // .then(() => {
+          //   actionHandler(true);
+          //   snackBarHandler();
+          //   onCloseHandler();
+          // });
         }}
         onReset={() => {
           actionHandler(false);

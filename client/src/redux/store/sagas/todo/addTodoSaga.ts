@@ -1,16 +1,17 @@
 import { AxiosResponse } from "axios";
-import { put, call } from "redux-saga/effects";
+import { put, call, select } from "redux-saga/effects";
 import TodoModel from "../../../../model/Todo";
 import todoService from "../../../../service/Todo";
-import { TodoActionTypes } from "../../../types/todo";
+import { TodoAction, TodoActionTypes, TodoState } from "../../../types/todo";
+import { RootState } from "../../reducers";
 
-interface FetchProps {
+interface Props {
   type: TodoActionTypes;
   title: string;
   tagId: string;
 }
 
-export function* addTodoSaga({ title, tagId }: FetchProps): any {
+export function* addTodoSaga({ title, tagId }: Props): any {
   try {
     yield put({ type: TodoActionTypes.SET_LOADING, payload: true });
 
@@ -20,11 +21,24 @@ export function* addTodoSaga({ title, tagId }: FetchProps): any {
       todo: TodoModel;
     }> = yield call(todoService.createTodo.bind(todoService), title, tagId);
 
-    yield put({
+    const { todos, totalCount, limit }: TodoState = yield select<
+      (state: RootState) => TodoState
+    >((state) => state.todo);
+
+    const newTodos = todos.length < limit ? [...todos, data.todo] : [...todos];
+
+    yield put<TodoAction>({
       type: TodoActionTypes.ADD_TODO_SUCCESS,
-      payload: data.todo,
+      payload: {
+        todos: newTodos,
+        totalCount: totalCount + 1,
+        totalPages: Math.ceil((totalCount + 1) / limit),
+      },
     });
   } catch (error) {
-    console.log(error);
+    yield put<TodoAction>({
+      type: TodoActionTypes.SET_ERROR,
+      payload: "Something went wrong",
+    });
   }
 }

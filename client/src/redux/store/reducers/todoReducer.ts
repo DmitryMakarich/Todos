@@ -8,14 +8,13 @@ const initialState: TodoState = {
   limit: 5,
   currentPage: 1,
   filter: null,
+  error: null,
 };
 
 export const todoReducer = (
   state = initialState,
   action: TodoAction
 ): TodoState => {
-  // console.log("action", action);
-
   switch (action.type) {
     case TodoActionTypes.FETCH_TODOS_SUCCESS:
       return {
@@ -24,27 +23,52 @@ export const todoReducer = (
         totalCount: action.payload.count,
         totalPages: action.payload.pages,
         isLoading: false,
+        error: null,
       };
     case TodoActionTypes.ADD_TODO_SUCCESS:
       return {
         ...state,
-        todos:
-          state.todos.length < state.limit
-            ? [...state.todos, action.payload]
-            : state.todos,
-        totalCount: state.totalCount + 1,
-        totalPages: Math.ceil((state.totalCount + 1) / state.limit),
+        todos: action.payload.todos,
+        totalCount: action.payload.totalCount,
+        totalPages: action.payload.totalPages,
         isLoading: false,
+        error: null,
+      };
+    case TodoActionTypes.UPDATE_TODO_SUCCESS:
+      return {
+        ...state,
+        todos: action.payload,
+        isLoading: false,
+        error: null,
+      };
+    case TodoActionTypes.REMOVE_TODO_SUCCESS:
+      return {
+        ...state,
+        todos: action.payload.todos,
+        totalCount: action.payload.totalCount,
+        totalPages: action.payload.totalPages,
+        isLoading: false,
+        error: null,
       };
     case TodoActionTypes.SET_CURRENT_PAGE:
       return {
         ...state,
-        currentPage: action.payload.page,
+        currentPage: action.payload,
       };
     case TodoActionTypes.SET_LOADING:
       return {
         ...state,
         isLoading: action.payload,
+      };
+    case TodoActionTypes.SET_FILTER:
+      return {
+        ...state,
+        filter: action.payload,
+      };
+    case TodoActionTypes.SET_ERROR:
+      return {
+        ...state,
+        error: action.payload,
       };
     default:
       return state;

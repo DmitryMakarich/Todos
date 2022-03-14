@@ -1,20 +1,30 @@
 import { put, call } from "redux-saga/effects";
 import TodoModel from "../../../../model/Todo";
 import todoService from "../../../../service/Todo";
-import { TodoActionTypes } from "../../../types/todo";
+import { TodoAction, TodoActionTypes } from "../../../types/todo";
 
-interface FetchProps {
+interface Props {
   type: TodoActionTypes;
   page: number;
   limit: number;
+  filter: null | boolean;
 }
 
-export function* fetchTodoSaga({ page, limit }: FetchProps): any {
+export function* fetchTodoSaga({ page, limit, filter }: Props): any {
   try {
-    const { todos, count }: { todos: Array<TodoModel>; count: number } =
-      yield call(todoService.getTodos.bind(todoService), page, limit);
+    yield put<TodoAction>({ type: TodoActionTypes.SET_LOADING, payload: true });
 
-    yield put({
+    const { todos, count }: { todos: Array<TodoModel>; count: number } =
+      yield call(todoService.getTodos.bind(todoService), page, limit, filter);
+
+    if (filter !== null) {
+      yield put<TodoAction>({
+        type: TodoActionTypes.SET_CURRENT_PAGE,
+        payload: 1,
+      });
+    }
+
+    yield put<TodoAction>({
       type: TodoActionTypes.FETCH_TODOS_SUCCESS,
       payload: {
         todos,
@@ -23,6 +33,9 @@ export function* fetchTodoSaga({ page, limit }: FetchProps): any {
       },
     });
   } catch (error) {
-    console.log("error", error);
+    yield put<TodoAction>({
+      type: TodoActionTypes.SET_ERROR,
+      payload: "Something went wrong",
+    });
   }
 }

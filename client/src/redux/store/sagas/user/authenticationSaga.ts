@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { put, call } from "redux-saga/effects";
 import AuthConfigModel from "../../../../model/AuthConfig";
 import userService from "../../../../service/User";
-import { UserActionTypes } from "../../../types/user";
+import { UserAction, UserActionTypes } from "../../../types/user";
 
 interface PayloadProps {
   type: UserActionTypes;
@@ -26,7 +26,7 @@ export function* registerSaga({ type, formData }: PayloadProps): any {
       yield loginSaga({ type: UserActionTypes.LOGIN_USER, formData });
     }
   } catch (error) {
-    yield put({
+    yield put<UserAction>({
       type: UserActionTypes.REGISTER_USER_ERROR,
       payload: "User with this email already exists",
     });
@@ -45,7 +45,7 @@ export function* loginSaga({ type, formData }: PayloadProps): any {
 
     window.localStorage.setItem("accessToken", accessToken);
 
-    yield put({
+    yield put<UserAction>({
       type: UserActionTypes.LOGIN_USER_SUCCESS,
       payload: {
         userName,
@@ -53,7 +53,7 @@ export function* loginSaga({ type, formData }: PayloadProps): any {
       },
     });
   } catch (error) {
-    yield put({
+    yield put<UserAction>({
       type: UserActionTypes.LOGIN_USER_ERROR,
       payload: "Incorrect login or password",
     });

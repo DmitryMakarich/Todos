@@ -1,7 +1,7 @@
 import { put, call } from "redux-saga/effects";
 import TagModel from "../../../../model/Tag";
 import tagService from "../../../../service/Tag";
-import { TagActionTypes } from "../../../types/tag";
+import { TagAction, TagActionTypes } from "../../../types/tag";
 
 export function* fetchTagsSaga(): any {
   try {
@@ -9,12 +9,12 @@ export function* fetchTagsSaga(): any {
       tagService.getTags.bind(tagService)
     );
 
-    yield put({
+    yield put<TagAction>({
       type: TagActionTypes.FETCH_TAGS_SUCCESS,
       payload: tags,
     });
   } catch (error) {
-    yield put({
+    yield put<TagAction>({
       type: TagActionTypes.FETCH_TAGS_ERROR,
       payload: "Something went wrong",
     });
