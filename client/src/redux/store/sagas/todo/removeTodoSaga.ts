@@ -25,13 +25,7 @@ export function* removeTodoSaga({ id }: Props): any {
     let count = totalCount;
 
     if (response.status === 204) {
-      // yield fetchTodoSaga({
-      //   type: TodoActionTypes.FETCH_TODOS,
-      //   page: currentPage,
-      //   limit: limit,
-      //   filter: filter,
-      // });
-      updateTodos = todos.filter((todo) => todo._id !== id);
+      // updateTodos = todos.filter((todo) => todo._id !== id);
       count -= 1;
     }
 
@@ -44,14 +38,21 @@ export function* removeTodoSaga({ id }: Props): any {
       });
     }
 
-    yield put<TodoAction>({
-      type: TodoActionTypes.REMOVE_TODO_SUCCESS,
-      payload: {
-        todos: updateTodos,
-        totalCount: count,
-        totalPages,
-      },
+    yield fetchTodoSaga({
+      type: TodoActionTypes.FETCH_TODOS,
+      page: currentPage,
+      limit: limit,
+      filter: filter,
     });
+
+    // yield put<TodoAction>({
+    //   type: TodoActionTypes.REMOVE_TODO_SUCCESS,
+    //   payload: {
+    //     todos: updateTodos,
+    //     totalCount: count,
+    //     totalPages,
+    //   },
+    // });
 
     yield put<TodoAction>({
       type: TodoActionTypes.SET_LOADING,
