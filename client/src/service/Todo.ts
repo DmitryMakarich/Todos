@@ -1,12 +1,15 @@
 import BaseService from "./Base";
 
 import TodoModel from "../model/Todo";
+import { FilterOptions } from "../utils/FilterOptions";
 
 class Service extends BaseService {
-  public getTodos(page: number, limit: number, isCompleted: boolean | null) {
+  public getTodos(page: number, limit: number, isCompleted: FilterOptions) {
     return this.requests.get<{ todos: Array<TodoModel>; count: number }>(
       "/todo",
-      isCompleted === null ? { page, limit } : { page, limit, isCompleted }
+      isCompleted === FilterOptions.All
+        ? { page, limit }
+        : { page, limit, isCompleted }
     );
   }
 

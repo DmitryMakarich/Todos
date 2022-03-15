@@ -1,44 +1,47 @@
 import React, { useEffect, useState } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
 import { BsCardChecklist } from "react-icons/bs";
+import { Pagination } from "@mui/material";
 
 import "./index.scss";
 import TodoList from "../../components/TodoList";
 import Loader from "../../components/Loader";
 import { useHistory } from "react-router-dom";
 import CreationForm from "../../components/Modal/Forms/Creation";
-import { Pagination } from "@mui/material";
+
 import FilterBlock from "../../components/FilterBlock";
-import { useDispatch } from "react-redux";
-import { UserActionTypes } from "../../redux/types/user";
-import { UseTypeSelector } from "../../hooks/useTypeSelector";
-import { getTagAction } from "../../redux/store/action-creators/tag";
+import TodoModel from "../../model/Todo";
+import { getTagAction } from "../../redux/tag/tag.actions";
 import {
   getTodosAction,
   removeTodoAction,
+  SetCurrentPage,
+  setFilter,
   updateTodoAction,
-} from "../../redux/store/action-creators/todo";
-import { TodoActionTypes } from "../../redux/types/todo";
-import TodoModel from "../../model/Todo";
+} from "../../redux/todo/todo.actions";
+import { getTodosData } from "../../redux/todo/todo.selectors";
+import { getTags } from "../../redux/tag/tag.selectors";
+import { logoutUserAction } from "../../redux/user/user.actions";
+import { LIMIT_COUNT } from "../../constants/todo.constants";
+import { FilterOptions } from "../../utils/FilterOptions";
 
 function TodoPage() {
   const history = useHistory();
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const {
-    tag: { tags },
-    todo,
-  } = UseTypeSelector((state) => state);
-  const dispatch = useDispatch();
+  const { todos, currentPage, isLoading, totalPages, filter } =
+    useSelector(getTodosData);
 
-  const { todos, limit, currentPage, isLoading, totalPages, filter } = todo;
+  const { tags } = useSelector(getTags);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getTagAction());
   }, []);
 
   useEffect(() => {
-    dispatch(getTodosAction(currentPage, limit, filter));
+    dispatch(getTodosAction(currentPage, LIMIT_COUNT, filter));
   }, [currentPage, filter]);
 
   const openModalHandler = () => {
@@ -53,8 +56,8 @@ function TodoPage() {
     dispatch(removeTodoAction(id));
   };
 
-  const setFilterHandler = (filter: null | boolean) => {
-    dispatch({ type: TodoActionTypes.SET_FILTER, payload: filter });
+  const setFilterHandler = (filter: FilterOptions) => {
+    dispatch(setFilter(filter));
   };
 
   return (
@@ -65,7 +68,7 @@ function TodoPage() {
         <button
           className="todo-page_header_btn"
           onClick={() => {
-            dispatch({ type: UserActionTypes.LOGOUT_USER });
+            dispatch(logoutUserAction());
             history.push("/");
           }}
         >
@@ -108,10 +111,7 @@ function TodoPage() {
             <Pagination
               page={currentPage}
               onChange={(_, value) =>
-                dispatch({
-                  type: TodoActionTypes.SET_CURRENT_PAGE,
-                  payload: value,
-                })
+                dispatch(SetCurrentPage(value))
               }
               className="todo-page_body_links"
               count={totalPages}

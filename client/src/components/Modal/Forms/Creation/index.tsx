@@ -8,11 +8,10 @@ import "../index.scss";
 import SelectField from "../../../SelectField";
 import TagModel from "../../../../model/Tag";
 import { useDispatch } from "react-redux";
-import { addTodoAction } from "../../../../redux/store/action-creators/todo";
-import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
+import { addTodoAction } from "../../../../redux/todo/todo.actions";
 
 interface Props {
-  onCloseHandler: Function;
+  onCloseHandler: () => void;
   options: Array<TagModel>;
   isLoading: boolean;
 }

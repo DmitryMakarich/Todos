@@ -10,10 +10,10 @@ import TagModel from "../../../../model/Tag";
 import TodoModel from "../../../../model/Todo";
 
 interface Props {
-  onCloseHandler: Function;
+  onCloseHandler: () => void;
   options: Array<TagModel>;
   todo: TodoModel;
-  updateHandler: Function;
+  updateHandler: (updateTodo: TodoModel) => void;
 }
 
 const CreationSchema = Yup.object().shape({

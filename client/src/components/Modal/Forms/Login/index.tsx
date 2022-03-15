@@ -1,18 +1,20 @@
 import Modal from "../..";
+import * as Yup from "yup";
 import { Form, Formik } from "formik";
 
 import "../index.scss";
 import TextInput from "../../../TextInput";
-import * as Yup from "yup";
-import { useDispatch } from "react-redux";
-import { loginUserAction } from "../../../../redux/store/action-creators/user";
-import { UseTypeSelector } from "../../../../hooks/useTypeSelector";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import CustomSnackBar from "../../../SnackBar";
-import { UserActionTypes } from "../../../../redux/types/user";
+import {
+  loginUserAction,
+  loginUserFailAction,
+} from "../../../../redux/user/user.actions";
+import { loggingInfo } from "../../../../redux/user/user.selectors";
 
 interface Props {
-  onCloseHandler: Function;
+  onCloseHandler: () => void;
 }
 
 const LoginSchema = Yup.object().shape({
@@ -25,7 +27,7 @@ const LoginSchema = Yup.object().shape({
 function LoginForm({ onCloseHandler }: Props) {
   const [isOpenSnackBar, setIsOpenSnackBar] = useState(false);
 
-  const { error, isLogging } = UseTypeSelector((state) => state.user);
+  const { error, isLogging } = useSelector(loggingInfo);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -34,10 +36,7 @@ function LoginForm({ onCloseHandler }: Props) {
     }
 
     return () => {
-      dispatch({
-        type: UserActionTypes.LOGIN_USER_ERROR,
-        payload: null,
-      });
+      dispatch(loginUserFailAction(null));
     };
   }, [isLogging]);
 

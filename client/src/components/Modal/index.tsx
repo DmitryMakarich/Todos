@@ -6,7 +6,7 @@ import "./index.scss";
 
 interface Props {
   className?: string;
-  onCloseHandler: Function;
+  onCloseHandler: () => void;
 }
 
 function ModalWrapper({

@@ -3,11 +3,11 @@ import { Form, Formik } from "formik";
 import Modal from "../..";
 
 interface Props {
-  onCloseHandler: Function;
+  onCloseHandler: () => void;
   id: string;
-  deleteHandler: Function;
-  snackBarHandler: Function;
-  actionHandler: Function;
+  deleteHandler: (id: string) => void;
+  snackBarHandler: () => void;
+  actionHandler: (result: boolean) => void;
 }
 
 export default function DeleteForm({
@@ -23,11 +23,6 @@ export default function DeleteForm({
         initialValues={{ id }}
         onSubmit={(values: { id: string }) => {
           deleteHandler(values.id);
-          // .then(() => {
-          //   actionHandler(true);
-          //   snackBarHandler();
-          //   onCloseHandler();
-          // });
         }}
         onReset={() => {
           actionHandler(false);

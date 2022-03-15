@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import LoginForm from "../../components/Modal/Forms/Login";
 import RegisterForm from "../../components/Modal/Forms/Register";
 import "./index.scss";
-import { UseTypeSelector } from "../../hooks/useTypeSelector";
+import { loggingInfo } from "../../redux/user/user.selectors";
 
 function HomePage() {
-  const { isLogging } = UseTypeSelector((state) => state.user);
+  const { isLogging } = useSelector(loggingInfo);
 
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);

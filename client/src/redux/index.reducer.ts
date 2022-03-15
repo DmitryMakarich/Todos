@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import { tagReducer } from "./tagReducer";
-import { todoReducer } from "./todoReducer";
-import { userReducer } from "./userReducer";
+import { tagReducer } from "./tag/tag.reducer";
+import { todoReducer } from "./todo/todo.reducer";
+import { userReducer } from "./user/user.reducer";
 
 export const rootReducer = combineReducers({
   user: userReducer,

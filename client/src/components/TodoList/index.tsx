@@ -21,8 +21,8 @@ interface Props {
   isEmpty: boolean;
   todos: Array<TodoModel>;
   tags: Array<TagModel>;
-  deleteHandler: Function;
-  updateHadler: Function;
+  deleteHandler: (id: string) => void;
+  updateHadler: (updateTodo: TodoModel) => void;
 }
 
 function TodoList({
