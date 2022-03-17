@@ -14,10 +14,9 @@ export const getTodosData = createSelector(
 
 export const getStats = createSelector(
   (state: RootState) => state.todo,
-  ({ completed, created, period }) => ({
+  ({ completed, created }) => ({
     completed,
     created,
-    period,
   })
 );
 
@@ -25,5 +24,12 @@ export const getLoadingStatus = createSelector(
   (state: RootState) => state.todo,
   ({ isLoading }) => ({
     isLoading,
+  })
+);
+
+export const getModalStatus = createSelector(
+  (state: RootState) => state.todo,
+  ({ isModalOpen }) => ({
+    isModalOpen,
   })
 );

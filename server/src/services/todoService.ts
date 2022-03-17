@@ -1,6 +1,7 @@
 import moment, { unitOfTime } from "moment";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { PipelineStage } from "mongoose";
 import Todo from "../models/Todo";
 import User from "../models/User";
 
@@ -37,69 +38,137 @@ class TodoService {
     return { todos, count };
   }
 
-  async getStats(userId: ObjectId, time: string, tags: Array<ObjectId>) {
-    let searchingTime: unitOfTime.StartOf;
-
-    switch (time) {
-      case "day":
-        searchingTime = "day";
-        break;
-      case "week":
-        searchingTime = "isoWeek";
-        break;
-      default:
-        searchingTime = null;
-        break;
-    }
-
-    let completed;
-    let created;
-
-    const session = await Todo.startSession();
-
-    await session.withTransaction(async () => {
-      completed = await Todo.aggregate([
-        {
-          $match: {
-            user: userId,
-            completedDate: searchingTime
-              ? {
-                  $gt: moment().startOf(searchingTime).toDate(),
-                  $lte: moment().endOf(searchingTime).toDate(),
-                }
-              : Date,
-            isCompleted: true,
-            isArchive: false,
-            tag: tags.length ? { $in: [...tags] } : ObjectId,
+  async getStats(userId: ObjectId, tags: Array<ObjectId>) {
+    const reducePiplines: Array<PipelineStage> = [
+      {
+        $project: {
+          dayCount: {
+            $reduce: {
+              input: "$dayCount",
+              initialValue: { count: 0 },
+              in: { $first: "$dayCount" },
+            },
+          },
+          weekCount: {
+            $reduce: {
+              input: "$weekCount",
+              initialValue: { count: 0 },
+              in: { $first: "$weekCount" },
+            },
+          },
+          allTimeCount: {
+            $reduce: {
+              input: "$allTimeCount",
+              initialValue: { count: 0 },
+              in: { $first: "$allTimeCount" },
+            },
           },
         },
-        { $count: "count" },
-      ]).session(session);
-
-      created = await Todo.aggregate([
-        {
-          $match: {
-            user: userId,
-            creationDate: searchingTime
-              ? {
-                  $gt: moment().startOf(searchingTime).toDate(),
-                  $lte: moment().endOf(searchingTime).toDate(),
-                }
-              : Date,
-            isArchive: false,
-            tag: tags.length ? { $in: [...tags] } : ObjectId,
-          },
+      },
+      {
+        $project: {
+          initialValues: "$values",
+          dayCount: "$dayCount.count",
+          weekCount: "$weekCount.count",
+          allTimeCount: "$allTimeCount.count",
         },
-        { $count: "count" },
-      ]).session(session);
-    });
+      },
+    ];
 
-    const completedCount = completed.length ? completed[0].count : 0;
-    const createdCount = created.length ? created[0].count : 0;
+    const completed = await Todo.aggregate([
+      {
+        $facet: {
+          dayCount: [
+            {
+              $match: {
+                user: userId,
+                completedDate: {
+                  $gt: moment().startOf("day").toDate(),
+                },
+                isCompleted: true,
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+          weekCount: [
+            {
+              $match: {
+                user: userId,
+                completedDate: {
+                  $gt: moment().startOf("isoWeek").toDate(),
+                },
+                isCompleted: true,
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+          allTimeCount: [
+            {
+              $match: {
+                user: userId,
+                isCompleted: true,
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+        },
+      },
+      ...reducePiplines,
+    ]);
+
+    const created = await Todo.aggregate([
+      {
+        $facet: {
+          dayCount: [
+            {
+              $match: {
+                user: userId,
+                creationDate: {
+                  $gt: moment().startOf("day").toDate(),
+                },
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+          weekCount: [
+            {
+              $match: {
+                user: userId,
+                creationDate: {
+                  $gt: moment().startOf("isoWeek").toDate(),
+                },
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+          allTimeCount: [
+            {
+              $match: {
+                user: userId,
+                isArchive: false,
+                tag: tags.length ? { $in: [...tags] } : ObjectId,
+              },
+            },
+            { $count: "count" },
+          ],
+        },
+      },
+      ...reducePiplines,
+    ]);
 
     return {
-      completedCount,
-      createdCount,
+      completed: completed[0],
+      created: created[0],
     };
   }
 

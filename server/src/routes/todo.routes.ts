@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/todo", [auth, validation], todoController.get);
 router.post(
-  "/todo/:time",
+  "/todo/stats",
   [auth, ...todoSchemas.getStatsSchema, validation],
   todoController.getStats
 );

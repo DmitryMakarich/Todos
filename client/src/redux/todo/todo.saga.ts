@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import { put, call, select, takeLatest } from "redux-saga/effects";
 import { ActionType } from "typesafe-actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
+import { StatsModel } from "../../model/Stats";
 import TodoModel from "../../model/Todo";
 import todoService from "../../service/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
@@ -21,6 +22,7 @@ import {
   updateTodoAction,
   updateTodoSuccessAction,
   getStatsSuccessAction,
+  setModal,
 } from "./todo.actions";
 import { ITodoReducer } from "./todo.reducer";
 
@@ -50,18 +52,12 @@ export function* fetchTodoSaga({
 
 export function* getStatsSaga({ payload }: ActionType<typeof getStatsAction>) {
   try {
-    const {
-      data,
-    }: AxiosResponse<{
-      completedCount: number;
-      createdCount: number;
-    }> = yield call(
+    const { data }: AxiosResponse<StatsModel> = yield call(
       todoService.getStats.bind(todoService),
-      payload.period,
       payload.tags
     );
 
-    yield put(getStatsSuccessAction(data.completedCount, data.createdCount));
+    yield put(getStatsSuccessAction(data.completed, data.created));
   } catch (error) {
     yield put(setError("Something went wrong"));
   }
@@ -80,6 +76,7 @@ export function* addTodoSaga({
     }> = yield call(todoService.createTodo.bind(todoService), title, tagId);
 
     yield put(addTodoSuccessAction(data.todo));
+    yield put(setModal(false));
   } catch (error) {
     yield put(setError("Something went wrong"));
   }
@@ -97,6 +94,7 @@ export function* updateTodoSaga({
     );
 
     yield put(updateTodoSuccessAction(todo));
+    yield put(setModal(false));
   } catch (error) {
     yield put(setError("Something went wrong"));
   }
@@ -123,6 +121,7 @@ export function* removeTodoSaga({
     yield fetchTodoSaga(getTodosAction(currentPage, LIMIT_COUNT, filter));
 
     yield put(setLoading(false));
+    yield put(setModal(false));
   } catch (error) {
     yield put(setError("Something went wrong"));
   }

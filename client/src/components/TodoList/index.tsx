@@ -16,6 +16,8 @@ import EmptyTodos from "../EmptyTodos";
 import CustomSnackBar from "../SnackBar";
 
 import "./index.scss";
+import { useDispatch } from "react-redux";
+import { setModal } from "../../redux/todo/todo.actions";
 
 interface Props {
   isEmpty: boolean;
@@ -39,6 +41,7 @@ function TodoList({
   const [isSuccessfullyDeleted, setIsSuccessfullyDeleted] = useState<
     boolean | null
   >(null);
+  const dispatch = useDispatch();
 
   const deleteModalHandler = () => {
     setIsOpenDeleteModal(!isOpenDeleteModal);
@@ -105,6 +108,7 @@ function TodoList({
                     <td>
                       <BsPencilSquare
                         onClick={() => {
+                          dispatch(setModal(true));
                           setSelectedTodo(todo);
                           updateModalHandler();
                         }}
@@ -113,6 +117,7 @@ function TodoList({
                     <td>
                       <BsTrashFill
                         onClick={() => {
+                          dispatch(setModal(true));
                           setSelectedTodo(todo);
                           deleteModalHandler();
                         }}

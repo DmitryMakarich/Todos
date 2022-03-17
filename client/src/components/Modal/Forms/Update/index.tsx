@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
 import Modal from "../..";
@@ -8,6 +8,8 @@ import "../index.scss";
 import SelectField from "../../../SelectField";
 import TagModel from "../../../../model/Tag";
 import TodoModel from "../../../../model/Todo";
+import { useSelector } from "react-redux";
+import { getModalStatus } from "../../../../redux/todo/todo.selectors";
 
 interface Props {
   onCloseHandler: () => void;
@@ -27,6 +29,14 @@ export default function UpdateForm({
   updateHandler,
   todo,
 }: Props) {
+  const { isModalOpen } = useSelector(getModalStatus);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      onCloseHandler();
+    }
+  }, [isModalOpen]);
+
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik

@@ -9,7 +9,6 @@ const getStatsSchema = [
         throw new Error("Array does not contain mogodb id");
       return true;
     }),
-  param("time").isString(),
 ];
 
 const createTodoSchema = [

@@ -1,8 +1,8 @@
 import { createReducer } from "typesafe-actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
+import { TimePeriod } from "../../model/Stats";
 import TodoModel from "../../model/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
-import { TimeOptions } from "../../utils/TimeOptions";
 import { RootActions } from "../index.actions";
 import {
   addTodoSuccessAction,
@@ -13,7 +13,7 @@ import {
   setError,
   setFilter,
   setLoading,
-  setPeriod,
+  setModal,
   updateTodoSuccessAction,
 } from "./todo.actions";
 
@@ -22,10 +22,10 @@ export interface ITodoReducer {
   isLoading: boolean;
   totalPages: number;
   totalCount: number;
+  isModalOpen: boolean;
   currentPage: number;
-  created: number;
-  completed: number;
-  period: TimeOptions;
+  created: TimePeriod;
+  completed: TimePeriod;
   filter: FilterOptions;
   error: null | string;
 }
@@ -35,9 +35,17 @@ const initialState: ITodoReducer = {
   isLoading: true,
   totalPages: 0,
   totalCount: 0,
-  created: 0,
-  completed: 0,
-  period: TimeOptions.AllTime,
+  created: {
+    dayCount: 0,
+    weekCount: 0,
+    allTimeCount: 0,
+  },
+  completed: {
+    dayCount: 0,
+    weekCount: 0,
+    allTimeCount: 0,
+  },
+  isModalOpen: false,
   currentPage: 1,
   filter: FilterOptions.All,
   error: null,
@@ -105,10 +113,6 @@ export const todoReducer = createReducer<ITodoReducer, RootActions>(
       error: null,
     };
   })
-  .handleAction(setPeriod, (state, { payload }) => ({
-    ...state,
-    period: payload.period,
-  }))
   .handleAction(SetCurrentPage, (state, { payload }) => ({
     ...state,
     currentPage: payload,
@@ -124,4 +128,8 @@ export const todoReducer = createReducer<ITodoReducer, RootActions>(
   .handleAction(setError, (state, { payload }) => ({
     ...state,
     error: payload,
+  }))
+  .handleAction(setModal, (state, { payload }) => ({
+    ...state,
+    isModalOpen: payload,
   }));

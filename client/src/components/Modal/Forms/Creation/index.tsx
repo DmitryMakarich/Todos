@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
 import Modal from "../..";
@@ -7,8 +7,9 @@ import TextInput from "../../../TextInput";
 import "../index.scss";
 import SelectField from "../../../SelectField";
 import TagModel from "../../../../model/Tag";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addTodoAction } from "../../../../redux/todo/todo.actions";
+import { getModalStatus } from "../../../../redux/todo/todo.selectors";
 
 interface Props {
   onCloseHandler: () => void;
@@ -27,6 +28,13 @@ export default function CreationForm({
   isLoading,
 }: Props) {
   const dispatch = useDispatch();
+  const { isModalOpen } = useSelector(getModalStatus);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      onCloseHandler();
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal onCloseHandler={onCloseHandler}>

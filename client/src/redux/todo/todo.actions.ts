@@ -1,7 +1,7 @@
 import { createAction } from "typesafe-actions";
+import { TimePeriod } from "../../model/Stats";
 import TodoModel from "../../model/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
-import { TimeOptions } from "../../utils/TimeOptions";
 
 export enum TodoActionTypes {
   FETCH_TODOS = "FETCH_TODOS",
@@ -18,7 +18,7 @@ export enum TodoActionTypes {
   SET_FILTER = "SET_FILTER",
   SET_STATS = "SET_STATS",
   SET_STATS_SUCCESS = "SET_STATS_SUCCESS",
-  SET_PERIOD = "SET_PERIOD",
+  SET_MODAL = "SET_MODAL",
 }
 
 export const getTodosAction = createAction(
@@ -32,24 +32,16 @@ export const getTodosAction = createAction(
 
 export const getStatsAction = createAction(
   TodoActionTypes.SET_STATS,
-  (period: TimeOptions, tags: Array<string>) => ({
-    period,
+  (tags: Array<string>) => ({
     tags,
   })
 )();
 
 export const getStatsSuccessAction = createAction(
   TodoActionTypes.SET_STATS_SUCCESS,
-  (completed: number, created: number) => ({
+  (completed: TimePeriod, created: TimePeriod) => ({
     completed,
     created,
-  })
-)();
-
-export const setPeriod = createAction(
-  TodoActionTypes.SET_PERIOD,
-  (period: TimeOptions) => ({
-    period,
   })
 )();
 
@@ -112,4 +104,9 @@ export const setError = createAction(
 export const setFilter = createAction(
   TodoActionTypes.SET_FILTER,
   (filter: FilterOptions) => filter
+)();
+
+export const setModal = createAction(
+  TodoActionTypes.SET_MODAL,
+  (isOpen: boolean) => isOpen
 )();

@@ -41,16 +41,14 @@ class TodoController {
   }
 
   async getStats(
-    req: IAuthorizedRequest<{ time: string }, null, { tags: Array<string> }>,
+    req: IAuthorizedRequest<null, null, { tags: Array<string> }>,
     res: Response
   ) {
     try {
-      const { time } = req.params;
       const { tags } = req.body;
 
       const val = await todoService.getStats(
         new ObjectId(req.userId),
-        time,
         tags.map((tag) => new ObjectId(tag))
       );
 

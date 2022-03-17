@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Formik } from "formik";
 import Modal from "../..";
+import { useSelector } from "react-redux";
+import { getModalStatus } from "../../../../redux/todo/todo.selectors";
 
 interface Props {
   onCloseHandler: () => void;
@@ -17,6 +19,14 @@ export default function DeleteForm({
   actionHandler,
   snackBarHandler,
 }: Props) {
+  const { isModalOpen } = useSelector(getModalStatus);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      onCloseHandler();
+    }
+  }, [isModalOpen]);
+  
   return (
     <Modal onCloseHandler={onCloseHandler}>
       <Formik

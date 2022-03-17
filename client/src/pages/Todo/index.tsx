@@ -18,6 +18,7 @@ import {
   removeTodoAction,
   SetCurrentPage,
   setFilter,
+  setModal,
   updateTodoAction,
 } from "../../redux/todo/todo.actions";
 import { getTodosData } from "../../redux/todo/todo.selectors";
@@ -26,7 +27,6 @@ import { logoutUserAction } from "../../redux/user/user.actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
 import { FilterOptions } from "../../utils/FilterOptions";
 import Stats from "../../components/Stats";
-import { TimeOptions } from "../../utils/TimeOptions";
 import CustomSelect from "../../components/CustomSelect";
 
 function TodoPage() {
@@ -44,7 +44,7 @@ function TodoPage() {
   useEffect(() => {
     dispatch(getTagAction());
 
-    dispatch(getStatsAction(TimeOptions.AllTime, []));
+    dispatch(getStatsAction([]));
   }, []);
 
   useEffect(() => {
@@ -95,7 +95,10 @@ function TodoPage() {
         <h1>Your todo list</h1>
         <button
           className="todo-page_body_create-btn"
-          onClick={openModalHandler}
+          onClick={() => {
+            dispatch(setModal(true));
+            openModalHandler();
+          }}
           style={
             !todos.length
               ? {
