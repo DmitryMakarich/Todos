@@ -3,7 +3,8 @@ import { Schema, Types, model } from "mongoose";
 interface Todo {
   title: string;
   isCompleted: boolean;
-  date: Date;
+  creationDate: Date;
+  completedDate: Date;
   tag: Types.ObjectId;
   isArchive: boolean;
   user: Types.ObjectId;
@@ -16,7 +17,8 @@ const Todo = new Schema<Todo>({
   },
   isCompleted: { type: Boolean, required: true, default: false },
   isArchive: { type: Boolean, default: false },
-  date: { type: Date, default: Date.now },
+  creationDate: { type: Date, default: Date.now },
+  completedDate: { type: Date, required: false },
   tag: { type: Schema.Types.ObjectId, ref: "Tag", required: true },
   user: {
     type: Schema.Types.ObjectId,

@@ -21,12 +21,14 @@ function HomePage() {
   const closeRegisterModalHandler = () => {
     setIsOpenRegisterModal(!isOpenRegisterModal);
   };
+  
+  const token = window.localStorage.getItem("accessToken");
 
   return (
     <section className="home-page">
       <div className="home-page_content">
         <div className="home-page_content_title">Todo List</div>
-        {isLogging ? (
+        {isLogging || token ? (
           <button
             onClick={() => history.push("/todo")}
             className="home-page_content_start-button"

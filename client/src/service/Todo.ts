@@ -2,6 +2,7 @@ import BaseService from "./Base";
 
 import TodoModel from "../model/Todo";
 import { FilterOptions } from "../utils/FilterOptions";
+import { TimeOptions } from "../utils/TimeOptions";
 
 class Service extends BaseService {
   public getTodos(page: number, limit: number, isCompleted: FilterOptions) {
@@ -11,6 +12,13 @@ class Service extends BaseService {
         ? { page, limit }
         : { page, limit, isCompleted }
     );
+  }
+
+  public getStats(time: TimeOptions, tags: Array<string>) {
+    return this.requests.post<{
+      completedCount: number;
+      createdCount: number;
+    }>(`/todo/${time}`, { tags });
   }
 
   public createTodo(title: string, tagId: string) {

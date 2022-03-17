@@ -8,6 +8,11 @@ const router = Router();
 
 router.get("/todo", [auth, validation], todoController.get);
 router.post(
+  "/todo/:time",
+  [auth, ...todoSchemas.getStatsSchema, validation],
+  todoController.getStats
+);
+router.post(
   "/todo",
   [auth, ...todoSchemas.createTodoSchema, validation],
   todoController.create

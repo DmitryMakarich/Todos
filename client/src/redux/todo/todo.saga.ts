@@ -8,6 +8,7 @@ import { FilterOptions } from "../../utils/FilterOptions";
 import { RootState } from "../index.reducer";
 import {
   addTodoAction,
+  getStatsAction,
   addTodoSuccessAction,
   getTodosAction,
   getTodosSuccess,
@@ -19,6 +20,7 @@ import {
   TodoActionTypes,
   updateTodoAction,
   updateTodoSuccessAction,
+  getStatsSuccessAction,
 } from "./todo.actions";
 import { ITodoReducer } from "./todo.reducer";
 
@@ -41,6 +43,25 @@ export function* fetchTodoSaga({
     }
 
     yield put(getTodosSuccess(todos, count, Math.ceil(count / LIMIT_COUNT)));
+  } catch (error) {
+    yield put(setError("Something went wrong"));
+  }
+}
+
+export function* getStatsSaga({ payload }: ActionType<typeof getStatsAction>) {
+  try {
+    const {
+      data,
+    }: AxiosResponse<{
+      completedCount: number;
+      createdCount: number;
+    }> = yield call(
+      todoService.getStats.bind(todoService),
+      payload.period,
+      payload.tags
+    );
+
+    yield put(getStatsSuccessAction(data.completedCount, data.createdCount));
   } catch (error) {
     yield put(setError("Something went wrong"));
   }
@@ -112,4 +133,5 @@ export default function* watchTodoActions() {
   yield takeLatest(TodoActionTypes.ADD_TODO, addTodoSaga);
   yield takeLatest(TodoActionTypes.UPDATE_TODO, updateTodoSaga);
   yield takeLatest(TodoActionTypes.REMOVE_TODO, removeTodoSaga);
+  yield takeLatest(TodoActionTypes.SET_STATS, getStatsSaga);
 }

@@ -40,6 +40,26 @@ class TodoController {
     }
   }
 
+  async getStats(
+    req: IAuthorizedRequest<{ time: string }, null, { tags: Array<string> }>,
+    res: Response
+  ) {
+    try {
+      const { time } = req.params;
+      const { tags } = req.body;
+
+      const val = await todoService.getStats(
+        new ObjectId(req.userId),
+        time,
+        tags.map((tag) => new ObjectId(tag))
+      );
+
+      res.json(val);
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  }
+
   async create(
     req: IAuthorizedRequest<null, null, { title: string; tagId: string }>,
     res: Response

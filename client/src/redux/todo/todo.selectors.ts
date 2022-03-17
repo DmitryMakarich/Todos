@@ -11,3 +11,19 @@ export const getTodosData = createSelector(
     filter,
   })
 );
+
+export const getStats = createSelector(
+  (state: RootState) => state.todo,
+  ({ completed, created, period }) => ({
+    completed,
+    created,
+    period,
+  })
+);
+
+export const getLoadingStatus = createSelector(
+  (state: RootState) => state.todo,
+  ({ isLoading }) => ({
+    isLoading,
+  })
+);

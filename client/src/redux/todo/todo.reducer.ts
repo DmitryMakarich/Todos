@@ -2,15 +2,18 @@ import { createReducer } from "typesafe-actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
 import TodoModel from "../../model/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
+import { TimeOptions } from "../../utils/TimeOptions";
 import { RootActions } from "../index.actions";
 import {
   addTodoSuccessAction,
+  getStatsSuccessAction,
   getTodosSuccess,
   removeTodoSuccessAction,
   SetCurrentPage,
   setError,
   setFilter,
   setLoading,
+  setPeriod,
   updateTodoSuccessAction,
 } from "./todo.actions";
 
@@ -20,6 +23,9 @@ export interface ITodoReducer {
   totalPages: number;
   totalCount: number;
   currentPage: number;
+  created: number;
+  completed: number;
+  period: TimeOptions;
   filter: FilterOptions;
   error: null | string;
 }
@@ -29,6 +35,9 @@ const initialState: ITodoReducer = {
   isLoading: true,
   totalPages: 0,
   totalCount: 0,
+  created: 0,
+  completed: 0,
+  period: TimeOptions.AllTime,
   currentPage: 1,
   filter: FilterOptions.All,
   error: null,
@@ -43,6 +52,12 @@ export const todoReducer = createReducer<ITodoReducer, RootActions>(
     totalCount: payload.count,
     totalPages: payload.pages,
     isLoading: false,
+    error: null,
+  }))
+  .handleAction(getStatsSuccessAction, (state, { payload }) => ({
+    ...state,
+    completed: payload.completed,
+    created: payload.created,
     error: null,
   }))
   .handleAction(addTodoSuccessAction, (state, { payload }) => ({
@@ -90,6 +105,10 @@ export const todoReducer = createReducer<ITodoReducer, RootActions>(
       error: null,
     };
   })
+  .handleAction(setPeriod, (state, { payload }) => ({
+    ...state,
+    period: payload.period,
+  }))
   .handleAction(SetCurrentPage, (state, { payload }) => ({
     ...state,
     currentPage: payload,

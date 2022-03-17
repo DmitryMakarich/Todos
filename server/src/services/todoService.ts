@@ -1,3 +1,4 @@
+import moment, { unitOfTime } from "moment";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import Todo from "../models/Todo";
@@ -36,6 +37,72 @@ class TodoService {
     return { todos, count };
   }
 
+  async getStats(userId: ObjectId, time: string, tags: Array<ObjectId>) {
+    let searchingTime: unitOfTime.StartOf;
+
+    switch (time) {
+      case "day":
+        searchingTime = "day";
+        break;
+      case "week":
+        searchingTime = "isoWeek";
+        break;
+      default:
+        searchingTime = null;
+        break;
+    }
+
+    let completed;
+    let created;
+
+    const session = await Todo.startSession();
+
+    await session.withTransaction(async () => {
+      completed = await Todo.aggregate([
+        {
+          $match: {
+            user: userId,
+            completedDate: searchingTime
+              ? {
+                  $gt: moment().startOf(searchingTime).toDate(),
+                  $lte: moment().endOf(searchingTime).toDate(),
+                }
+              : Date,
+            isCompleted: true,
+            isArchive: false,
+            tag: tags.length ? { $in: [...tags] } : ObjectId,
+          },
+        },
+        { $count: "count" },
+      ]).session(session);
+
+      created = await Todo.aggregate([
+        {
+          $match: {
+            user: userId,
+            creationDate: searchingTime
+              ? {
+                  $gt: moment().startOf(searchingTime).toDate(),
+                  $lte: moment().endOf(searchingTime).toDate(),
+                }
+              : Date,
+            isArchive: false,
+            tag: tags.length ? { $in: [...tags] } : ObjectId,
+          },
+        },
+        { $count: "count" },
+      ]).session(session);
+    });
+
+    const completedCount = completed.length ? completed[0].count : 0;
+    const createdCount = created.length ? created[0].count : 0;
+
+    return {
+      completedCount,
+      createdCount,
+    };
+  }
+
   async create(data: TodoData, userId: ObjectId) {
     const session = await mongoose.startSession();
 
@@ -65,15 +132,43 @@ class TodoService {
   }
 
   async update(id: ObjectId, data: TodoData) {
-    return Todo.findByIdAndUpdate(
-      id,
-      {
-        title: data.title,
-        isCompleted: data.isCompleted,
-        tag: data.tagId,
-      },
-      { returnDocument: "after" }
-    ).lean();
+    const session = await Todo.startSession();
+
+    let todo;
+
+    await session.withTransaction(async () => {
+      const updatedTodo = await Todo.findById(id);
+
+      if (updatedTodo.isCompleted && !data.isCompleted) {
+        todo = await Todo.findByIdAndUpdate(
+          id,
+          {
+            title: data.title,
+            isCompleted: data.isCompleted,
+            tag: data.tagId,
+            $unset: {
+              completedDate: "",
+            },
+          },
+          { returnDocument: "after" }
+        ).lean();
+
+        return;
+      }
+
+      todo = await Todo.findByIdAndUpdate(
+        id,
+        {
+          title: data.title,
+          isCompleted: data.isCompleted,
+          tag: data.tagId,
+          completedDate: Date.now(),
+        },
+        { returnDocument: "after" }
+      ).lean();
+    });
+
+    return todo;
   }
 
   async delete(id: ObjectId) {

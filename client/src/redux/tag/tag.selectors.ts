@@ -7,3 +7,10 @@ export const getTags = createSelector(
     tags,
   })
 );
+
+export const getSelectedTags = createSelector(
+  (state: RootState) => state.tag,
+  ({ selectedTags }) => ({
+    selectedTags,
+  })
+);
