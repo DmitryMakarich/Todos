@@ -1,5 +1,6 @@
 import { createAction } from "typesafe-actions";
 import UserModel from "../../model/User";
+import UserStatsModel from "../../model/UserStats";
 
 export enum UserActionTypes {
   LOGIN_USER = "LOGIN_USER",
@@ -8,6 +9,9 @@ export enum UserActionTypes {
   REGISTER_USER = "REGISTER_USER",
   REGISTER_USER_ERROR = "REGISTER_USER_ERROR",
   LOGOUT_USER = "LOGOUT_USER",
+  SET_LOADING = "SET_LOADING",
+  SET_USERS_STATS = "SET_USERS_STATS",
+  SET_USER_STATS_SUCCESS = "SET_USER_STATS_SUCCESS",
 }
 
 export const loginUserAction = createAction(
@@ -39,6 +43,16 @@ export const registerUserFailAction = createAction(
   (error: string | null) => error
 )();
 
-export const logoutUserAction = createAction(
-  UserActionTypes.LOGOUT_USER
+export const setUserStats = createAction(UserActionTypes.SET_USERS_STATS)();
+
+export const setUserStatsSuccess = createAction(
+  UserActionTypes.SET_USER_STATS_SUCCESS,
+  (stats: Array<UserStatsModel>) => stats
 )();
+
+export const setLoading = createAction(
+  UserActionTypes.SET_LOADING,
+  (isLoading: boolean) => isLoading
+)();
+
+export const logoutUserAction = createAction(UserActionTypes.LOGOUT_USER)();

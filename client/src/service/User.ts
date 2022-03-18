@@ -1,6 +1,7 @@
 import BaseService from "./Base";
 
 import AuthConfigModel from "../model/AuthConfig";
+import UserStatsModel from "../model/UserStats";
 
 class Service extends BaseService {
   public login(email: string, password: string) {
@@ -16,6 +17,10 @@ class Service extends BaseService {
       password,
       fullName,
     });
+  }
+
+  public getUsers() {
+    return this.requests.post<UserStatsModel[]>(`/user`, {});
   }
 }
 

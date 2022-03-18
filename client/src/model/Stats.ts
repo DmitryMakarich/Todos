@@ -1,10 +1,6 @@
-export interface StatsModel {
+import TimePeriod from "./TimePeriod";
+
+export default interface StatsModel {
   completed: TimePeriod;
   created: TimePeriod;
-}
-
-export interface TimePeriod {
-  dayCount: number;
-  weekCount: number;
-  allTimeCount: number;
 }

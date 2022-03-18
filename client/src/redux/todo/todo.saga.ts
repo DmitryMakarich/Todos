@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { put, call, select, takeLatest } from "redux-saga/effects";
 import { ActionType } from "typesafe-actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
-import { StatsModel } from "../../model/Stats";
+import StatsModel from "../../model/Stats";
 import TodoModel from "../../model/Todo";
 import todoService from "../../service/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";

@@ -1,5 +1,5 @@
 import { createAction } from "typesafe-actions";
-import { TimePeriod } from "../../model/Stats";
+import TimePeriod from "../../model/TimePeriod";
 import TodoModel from "../../model/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
 

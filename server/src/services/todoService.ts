@@ -49,6 +49,7 @@ class TodoService {
               in: { $first: "$dayCount" },
             },
           },
+          // dayCount: { $first: "$dayCount" },
           weekCount: {
             $reduce: {
               input: "$weekCount",
@@ -56,6 +57,7 @@ class TodoService {
               in: { $first: "$weekCount" },
             },
           },
+          // weekCount: { $first: "$weekCount" },
           allTimeCount: {
             $reduce: {
               input: "$allTimeCount",
@@ -63,11 +65,11 @@ class TodoService {
               in: { $first: "$allTimeCount" },
             },
           },
+          // allTimeCount: { $first: "$allTimeCount" },
         },
       },
       {
         $project: {
-          initialValues: "$values",
           dayCount: "$dayCount.count",
           weekCount: "$weekCount.count",
           allTimeCount: "$allTimeCount.count",

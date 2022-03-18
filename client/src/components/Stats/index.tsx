@@ -20,9 +20,6 @@ export default function Stats({ selectedTags }: Props) {
     dispatch(getStatsAction(selectedTags));
   }, [isLoading, selectedTags]);
 
-  console.log("completed", completed);
-  console.log("created", created);
-
   return (
     <div className="stats-table">
       <table>

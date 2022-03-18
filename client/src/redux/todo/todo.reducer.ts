@@ -1,6 +1,6 @@
 import { createReducer } from "typesafe-actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
-import { TimePeriod } from "../../model/Stats";
+import TimePeriod from "../../model/TimePeriod";
 import TodoModel from "../../model/Todo";
 import { FilterOptions } from "../../utils/FilterOptions";
 import { RootActions } from "../index.actions";

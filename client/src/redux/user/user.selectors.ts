@@ -8,3 +8,18 @@ export const loggingInfo = createSelector(
     isLogging: userState.isLogging,
   })
 );
+
+export const userInfo = createSelector(
+  (state: RootState) => state.user,
+  (userState) => ({
+    user: userState.user,
+  })
+);
+
+export const userStats = createSelector(
+  (state: RootState) => state.user,
+  (userState) => ({
+    stats: userState.usersStats,
+    isLoading: userState.isLoading,
+  })
+);

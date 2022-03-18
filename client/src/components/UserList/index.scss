@@ -1,0 +1,46 @@
+.user-list {
+  overflow: auto;
+  width: 70%;
+  border-radius: 20px;
+  margin-bottom: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  &_head {
+    background: #14518c;
+    color: white;
+
+    th {
+      padding: 10px;
+
+      &:first-of-type {
+        width: 25%;
+      }
+
+      &:last-of-type {
+        width: 20%;
+      }
+    }
+  }
+
+  &_body {
+    max-height: 300px;
+    overflow-x: auto;
+    background: white;
+
+    td {
+      padding: 15px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+
+      &:first-of-type {
+        text-align: start;
+      }
+    }
+  }
+}

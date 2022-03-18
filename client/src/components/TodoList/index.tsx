@@ -7,7 +7,7 @@ import { BsFillExclamationCircleFill } from "react-icons/bs";
 import TagModel from "../../model/Tag";
 
 import TodoModel from "../../model/Todo";
-import { titles } from "../../utils/TableTitles";
+import { todoTitles } from "../../utils/TableTitles";
 import DeleteForm from "../Modal/Forms/Delete";
 import UpdateForm from "../Modal/Forms/Update";
 
@@ -67,7 +67,7 @@ function TodoList({
             <table>
               <thead className="todo-list_head">
                 <tr>
-                  {titles.map((title) => (
+                  {todoTitles.map((title) => (
                     <th key={title.label} colSpan={title.colSpan}>
                       {title.label}
                     </th>

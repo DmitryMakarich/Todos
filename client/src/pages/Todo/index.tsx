@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BsCardChecklist } from "react-icons/bs";
 import { Pagination } from "@mui/material";
 
 import "./index.scss";
@@ -23,14 +22,12 @@ import {
 } from "../../redux/todo/todo.actions";
 import { getTodosData } from "../../redux/todo/todo.selectors";
 import { getSelectedTags, getTags } from "../../redux/tag/tag.selectors";
-import { logoutUserAction } from "../../redux/user/user.actions";
 import { LIMIT_COUNT } from "../../constants/todo.constants";
 import { FilterOptions } from "../../utils/FilterOptions";
 import Stats from "../../components/Stats";
 import CustomSelect from "../../components/CustomSelect";
 
 function TodoPage() {
-  const history = useHistory();
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const { todos, currentPage, isLoading, totalPages, filter } =
@@ -76,25 +73,12 @@ function TodoPage() {
   };
 
   return (
-    <div className="todo-page">
-      <header className="todo-page_header">
-        <BsCardChecklist className="todo-page_header_logo" />
-
-        <button
-          className="todo-page_header_btn"
-          onClick={() => {
-            dispatch(logoutUserAction());
-            history.push("/");
-          }}
-        >
-          Logout
-        </button>
-      </header>
-      <section className="todo-page_body">
+    <>
+      <section className="todo-page">
         <Stats selectedTags={selectedTags} />
         <h1>Your todo list</h1>
         <button
-          className="todo-page_body_create-btn"
+          className="todo-page_create-btn"
           onClick={() => {
             dispatch(setModal(true));
             openModalHandler();
@@ -116,7 +100,7 @@ function TodoPage() {
           <Loader />
         ) : (
           <>
-            <div className="todo-page_body_filters">
+            <div className="todo-page_filters">
               <CustomSelect
                 tags={tags.map((tag) => ({
                   label: tag.title,
@@ -140,7 +124,7 @@ function TodoPage() {
             <Pagination
               page={currentPage}
               onChange={(_, value) => dispatch(SetCurrentPage(value))}
-              className="todo-page_body_links"
+              className="todo-page_links"
               count={totalPages}
               color="primary"
               hidePrevButton
@@ -157,7 +141,7 @@ function TodoPage() {
           isLoading={isLoading}
         />
       )}
-    </div>
+    </>
   );
 }
 

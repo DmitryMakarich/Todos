@@ -9,8 +9,12 @@ import {
   loginUserSuccessAction,
   registerUserAction,
   registerUserFailAction,
+  setLoading,
+  setUserStats,
+  setUserStatsSuccess,
   UserActionTypes,
 } from "./user.actions";
+import UserStatsModel from "../../model/UserStats";
 
 export function* registerSaga({
   payload: { userName, email, password },
@@ -33,10 +37,10 @@ export function* registerSaga({
 
 export function* loginSaga({
   payload: { email, password },
-}: ActionType<typeof loginUserAction>): any {
+}: ActionType<typeof loginUserAction>) {
   try {
     const {
-      data: { userName, userId, accessToken },
+      data: { userName, userId, userRole, accessToken },
     }: AxiosResponse<AuthConfigModel> = yield call(
       userService.login.bind(userService),
       email,
@@ -44,13 +48,29 @@ export function* loginSaga({
     );
 
     window.localStorage.setItem("accessToken", accessToken);
+    window.localStorage.setItem("userRole", userRole.toString());
 
     yield put(
       loginUserSuccessAction({
         userId,
         userName,
+        userRole,
       })
     );
+  } catch (error) {
+    yield put(loginUserFailAction("Incorrect password or email"));
+  }
+}
+
+export function* getStats({}: ActionType<typeof setUserStats>) {
+  yield put(setLoading(true));
+
+  try {
+    const { data }: AxiosResponse<UserStatsModel[]> = yield call(
+      userService.getUsers.bind(userService)
+    );
+
+    yield put(setUserStatsSuccess(data));
   } catch (error) {
     yield put(loginUserFailAction("Incorrect password or email"));
   }
@@ -63,5 +83,6 @@ export function* logoutSaga() {
 export default function* watchUserAuthentication() {
   yield takeLatest(UserActionTypes.REGISTER_USER, registerSaga);
   yield takeLatest(UserActionTypes.LOGIN_USER, loginSaga);
+  yield takeLatest(UserActionTypes.SET_USERS_STATS, getStats);
   yield takeLatest(UserActionTypes.LOGOUT_USER, logoutSaga);
 }
