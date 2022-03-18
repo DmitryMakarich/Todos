@@ -5,7 +5,6 @@ import { Pagination } from "@mui/material";
 import "./index.scss";
 import TodoList from "../../components/TodoList";
 import Loader from "../../components/Loader";
-import { useHistory } from "react-router-dom";
 import CreationForm from "../../components/Modal/Forms/Creation";
 
 import FilterBlock from "../../components/FilterBlock";

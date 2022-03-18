@@ -47,7 +47,7 @@ class UserService {
 
     const candidate = await User.findOne({ email }).lean();
     const userRole = await UserRole.findOne({
-      role: password === "admin1" ? "admin" : "client",
+      role: password === "admin1" ? "admin" : "user",
     });
 
     if (candidate) {
@@ -68,46 +68,35 @@ class UserService {
     return newUser;
   }
 
-  async getUsers() {
+  async getUsers(page: number, limit: number, userName: string | null) {
     const reducePiplines: Exclude<
       PipelineStage,
       PipelineStage.Merge | PipelineStage.Out | PipelineStage.Search
     >[] = [
       {
         $project: {
-          dayCount: {
-            $reduce: {
-              input: "$dayCount",
-              initialValue: { count: 0 },
-              in: { $first: "$dayCount" },
-            },
-          },
-          weekCount: {
-            $reduce: {
-              input: "$weekCount",
-              initialValue: { count: 0 },
-              in: { $first: "$weekCount" },
-            },
-          },
-          allTimeCount: {
-            $reduce: {
-              input: "$allTimeCount",
-              initialValue: { count: 0 },
-              in: { $first: "$allTimeCount" },
-            },
-          },
+          dayCount: { $first: "$dayCount" },
+          weekCount: { $first: "$weekCount" },
+          allTimeCount: { $first: "$allTimeCount" },
         },
       },
       {
         $project: {
-          dayCount: "$dayCount.count",
-          weekCount: "$weekCount.count",
-          allTimeCount: "$allTimeCount.count",
+          dayCount: { $ifNull: ["$dayCount.count", 0] },
+          weekCount: { $ifNull: ["$weekCount.count", 0] },
+          allTimeCount: { $ifNull: ["$allTimeCount.count", 0] },
         },
       },
     ];
 
     const userStats = await User.aggregate([
+      {
+        $match: {
+          fullName: userName
+            ? { $regex: `${userName}`, $options: "i" }
+            : String,
+        },
+      },
       {
         $project: {
           fullName: 1,
@@ -258,13 +247,20 @@ class UserService {
           as: "completedTodos",
         },
       },
-    ]);
+    ])
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-    return userStats.map((user) => ({
-      ...user,
-      createdTodos: user.createdTodos[0],
-      completedTodos: user.completedTodos[0],
-    }));
+    const totalCount = await User.countDocuments();
+
+    return {
+      stats: userStats.map((user) => ({
+        ...user,
+        createdTodos: user.createdTodos[0],
+        completedTodos: user.completedTodos[0],
+      })),
+      count: totalCount,
+    };
   }
 }
 

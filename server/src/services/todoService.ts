@@ -42,37 +42,16 @@ class TodoService {
     const reducePiplines: Array<PipelineStage> = [
       {
         $project: {
-          dayCount: {
-            $reduce: {
-              input: "$dayCount",
-              initialValue: { count: 0 },
-              in: { $first: "$dayCount" },
-            },
-          },
-          // dayCount: { $first: "$dayCount" },
-          weekCount: {
-            $reduce: {
-              input: "$weekCount",
-              initialValue: { count: 0 },
-              in: { $first: "$weekCount" },
-            },
-          },
-          // weekCount: { $first: "$weekCount" },
-          allTimeCount: {
-            $reduce: {
-              input: "$allTimeCount",
-              initialValue: { count: 0 },
-              in: { $first: "$allTimeCount" },
-            },
-          },
-          // allTimeCount: { $first: "$allTimeCount" },
+          dayCount: { $first: "$dayCount" },
+          weekCount: { $first: "$weekCount" },
+          allTimeCount: { $first: "$allTimeCount" },
         },
       },
       {
         $project: {
-          dayCount: "$dayCount.count",
-          weekCount: "$weekCount.count",
-          allTimeCount: "$allTimeCount.count",
+          dayCount: { $ifNull: ["$dayCount.count", 0] },
+          weekCount: { $ifNull: ["$weekCount.count", 0] },
+          allTimeCount: { $ifNull: ["$allTimeCount.count", 0] },
         },
       },
     ];

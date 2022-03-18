@@ -14,7 +14,28 @@
   p {
     color: white;
     margin-top: 0px;
+    margin-bottom: 16px;
     font-size: 16px;
+  }
+
+  &_search {
+    display: flex;
+
+    button {
+      height: 34px;
+      margin-left: 10px;
+      background-color: #21ba45;
+      color: white;
+      outline: 0;
+      border: none;
+      font-size: 16px;
+      padding: 10px;
+
+      &:hover {
+        background-color: #16ab39;
+        cursor: pointer;
+      }
+    }
   }
 
   &_links {

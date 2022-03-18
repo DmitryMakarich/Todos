@@ -19,8 +19,13 @@ class Service extends BaseService {
     });
   }
 
-  public getUsers() {
-    return this.requests.post<UserStatsModel[]>(`/user`, {});
+  public getUsers(page: number, limit: number, userName: string | null) {
+    return this.requests.post<{ stats: UserStatsModel[]; count: number }>(
+      `/user?page=${page}&limit=${limit}`,
+      {
+        userName,
+      }
+    );
   }
 }
 

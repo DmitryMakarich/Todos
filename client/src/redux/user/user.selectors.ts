@@ -16,10 +16,3 @@ export const userInfo = createSelector(
   })
 );
 
-export const userStats = createSelector(
-  (state: RootState) => state.user,
-  (userState) => ({
-    stats: userState.usersStats,
-    isLoading: userState.isLoading,
-  })
-);

@@ -70,9 +70,25 @@ class UserController {
     }
   }
 
-  async getUsers(req: IAuthorizedRequest, res: Response) {
+  async getUsers(
+    req: IAuthorizedRequest<
+      null,
+      null,
+      { userName: string | null },
+      { page: string; limit: string }
+    >,
+    res: Response
+  ) {
     try {
-      const val = await userService.getUsers();
+      const { limit, page } = req.query;
+
+      const { userName } = req.body;
+
+      const val = await userService.getUsers(
+        parseInt(page),
+        parseInt(limit),
+        userName
+      );
 
       res.json(val);
     } catch (e) {
